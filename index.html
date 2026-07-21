@@ -1,0 +1,3509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FDFDFB">
+<meta name="google-site-verification" content="rKMd8ppZYCi6sYhX105z776Z0y5hv6T197yVgutcgCk" />
+<title>Q&A Review Deck</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMzIgMzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3QgeD0iMTEiIHk9IjExIiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiMxNjIzMkUiLz48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iMTciIGhlaWdodD0iMTciIGZpbGw9IiNGREZERkIiIHN0cm9rZT0iIzE2MjMyRSIgc3Ryb2tlLXdpZHRoPSIyLjQiLz48cGF0aCBkPSJNNy44IDEyLjYgTDExLjIgMTYuNCBMMTguNCA2LjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0M0NDAyRiIgc3Ryb2tlLXdpZHRoPSIyLjYiIHN0cm9rZS1saW5lY2FwPSJzcXVhcmUiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiLz48L3N2Zz4=">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Review Deck">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=STIX+Two+Text:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<style>
+  :root{
+    --paper:#F4F6F5;
+    --grid:rgba(22,49,64,.055);
+    --ink:#16232E;
+    --steel:#5B6B77;
+    --line:#C9D2D4;
+    --redline:#C4402F;
+    --pass:#2E7D5B;
+    --blue:#2A6BB0;
+    --orange:#B8631A;
+    --teal:#0D9488;
+    --brown:#7A4E2D;
+    --card:#FDFDFB;
+    --eqbg:#EEF2EF;
+    --filltext:#fff;
+    --fillhover:#0C161E;
+    --hoverbg:#EDEFEE;
+    --draghover:#FBF3F1;
+    --shadow:rgba(22,35,46,.14);
+    --display:"Saira Condensed",Arial Narrow,sans-serif;
+    --body:"IBM Plex Sans",system-ui,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+    --math:"STIX Two Text","Cambria Math",Georgia,serif;
+    --browse-scale:1;
+    color-scheme:light;
+  }
+  :root[data-theme="dark"]{
+    --paper:#10151A;
+    --grid:rgba(255,255,255,.05);
+    --ink:#E7ECEE;
+    --steel:#8B9CA8;
+    --line:#2C3841;
+    --redline:#DB5B45;
+    --pass:#3C9A6D;
+    --blue:#5B9BD9;
+    --orange:#E0954A;
+    --brown:#C4936A;
+    --teal:#2DD4BF;
+    --card:#181F25;
+    --eqbg:#1E2830;
+    --filltext:#10151A;
+    --fillhover:#C9D2D4;
+    --hoverbg:#232D34;
+    --draghover:#241C1A;
+    --shadow:rgba(0,0,0,.5);
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  /* overflow-x:hidden lives on html ONLY, not body. Per spec, "overflow-x/overflow-y" can't
+     actually be mismatched — pairing a non-"visible" x with a "visible" y (explicit or default)
+     always computes the y side to "auto" too, so html unavoidably becomes its own scroll
+     container here. That's fine on its own (that's the real, single scroller for the page) —
+     but with body having its OWN overflow-x:hidden as well, body became a SECOND, nested
+     scroll container whose own box never actually needs to scroll (content just grows html's
+     scroller instead). A sticky descendant sticks to the nearest ancestor that actually
+     scrolls, and body never does — so header's position:sticky silently broke, scrolling away
+     with the rest of the page instead of staying pinned. Leaving body's overflow at its
+     default (unset) lets its content overflow straight into html's one real scroll container. */
+  /* scrollbar-gutter:stable reserves the vertical scrollbar's space permanently, whether or
+     not the page is actually tall enough to need one right now. Without it, a classic
+     (non-overlay) scrollbar — the Windows Chrome default — only occupies space while content
+     overflows, so switching between a short Q/A card stack and a long Notes chapter would
+     make the scrollbar appear/disappear and visibly shift .wrap's centered content sideways
+     by half the scrollbar's width each time. */
+  html{-webkit-text-size-adjust:100%;overscroll-behavior-x:none;overflow-x:hidden;scrollbar-gutter:stable}
+  body{
+    font-family:var(--body);color:var(--ink);
+    background-color:var(--paper);
+    background-image:
+      linear-gradient(var(--grid) 1px,transparent 1px),
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:24px 24px;
+    min-height:100vh;
+    padding-bottom:56px;
+    overscroll-behavior-x:none;
+    touch-action:pan-y;
+  }
+  /* re-enable horizontal touch panning only inside the widgets that legitimately scroll sideways */
+  .chips,.katex-display,.katex{touch-action:pan-x pan-y}
+  .wrap{max-width:680px;margin:0 auto;padding:0 16px}
+
+  /* ---------- header ---------- */
+  header{border-bottom:2px solid var(--ink);background:var(--card);position:sticky;top:0;z-index:20}
+  /* Pins the Notes reading-progress bar just below the header instead of scrolling away with
+     the chapter text — --header-h is measured in JS (a ResizeObserver on header) rather than
+     hardcoded, since the header's actual height isn't guaranteed constant across font-scale/zoom. */
+  .notes-progress{position:sticky;top:var(--header-h,52px);z-index:15;background:var(--paper);padding-top:12px}
+  .toc{position:relative;flex:0 0 auto}
+  .toc-btn{font-family:var(--mono);font-size:11px;color:var(--steel);background:none;border:none;cursor:pointer;text-transform:uppercase;letter-spacing:.04em;padding:2px 0}
+  .toc-btn:hover,.toc.open .toc-btn{color:var(--ink)}
+  .toc-btn:disabled{opacity:.35;cursor:default}
+  .toc-btn:disabled:hover{color:var(--steel)}
+  .toc-list{
+    position:absolute;top:calc(100% + 6px);right:0;z-index:16;
+    min-width:220px;max-width:340px;max-height:260px;overflow-y:auto;
+    background:var(--card);border:1.5px solid var(--ink);box-shadow:4px 4px 0 var(--shadow);
+    list-style:none;font-family:var(--mono);font-size:12.5px;
+  }
+  .toc-list.hidden{display:none}
+  .toc-list li{padding:9px 12px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .toc-list li:hover,.toc-list li.active{background:var(--hoverbg)}
+  .toc-list li.active{color:var(--teal)}
+  .toc-list li.sub-h3{padding-left:24px;font-size:11.5px;color:var(--steel)}
+  .toc-list li.sub-h3.active{color:var(--teal)}
+  .toc-list li.toc-empty{cursor:default;color:var(--steel);white-space:normal}
+  .toc-list li.toc-empty:hover{background:none}
+  .head-inner{max-width:680px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:.06em;text-transform:uppercase}
+  .brand .rev{color:var(--redline)}
+  body.notes-mode .brand .rev{color:var(--teal)}
+  .head-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .theme-toggle{
+    width:30px;height:30px;padding:0;flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+    border:1.5px solid var(--ink);border-radius:0;background:var(--card);color:var(--ink);
+    cursor:pointer;transition:background .15s;
+  }
+  .theme-toggle:hover{background:var(--hoverbg)}
+  .theme-toggle .icon-sun{display:none}
+  [data-theme="dark"] .theme-toggle .icon-moon{display:none}
+  [data-theme="dark"] .theme-toggle .icon-sun{display:block}
+
+  /* ---------- study timer (persistent header button + its own popup) ---------- */
+  /* Always visible (unlike the settings/type-filter popups, which stay tucked behind their own
+     trigger icon) — the clock icon is a constant anchor, and the live countdown appears next to
+     it only once a session is running. Its own dropdown, independent of Settings. */
+  .timer-wrap{position:relative}
+  .timer-btn{
+    height:30px;padding:0 8px;flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    border:1.5px solid var(--ink);border-radius:0;background:var(--card);color:var(--ink);
+    cursor:pointer;transition:background .15s;font-family:var(--mono);font-size:12px;
+  }
+  .timer-btn:hover{background:var(--hoverbg)}
+  .timer-btn.break{border-color:var(--pass);color:var(--pass)}
+  .timer-btn-clock{font-family:var(--mono);font-size:12px}
+  .timer-panel{
+    position:absolute;top:calc(100% + 6px);right:0;z-index:30;
+    width:220px;max-width:calc(100vw - 32px);
+    background:var(--card);border:1.5px solid var(--ink);box-shadow:4px 4px 0 var(--shadow);
+    padding:14px;font-family:var(--mono);font-size:12px;
+  }
+  .timer-panel.hidden{display:none}
+
+  /* ---------- scroll-to-top ---------- */
+  /* Fixed bottom-right, shown once the page has scrolled a bit (see the scroll listener) —
+     z-index is deliberately below the note panel/settings dropdown (z-index 30/40) so it
+     stays tucked behind them rather than floating on top when either is open. The extra
+     env(safe-area-inset-*) offset (see the viewport-fit=cover meta tag) keeps it clear of a
+     notch/home-indicator/gesture-nav bar in a mobile PWA — without it the button sits flush
+     against the raw screen edge, which on some devices puts it half-behind the OS chrome. */
+  .to-top{
+    position:fixed;
+    right:calc(16px + env(safe-area-inset-right));
+    bottom:calc(16px + env(safe-area-inset-bottom));
+    z-index:15;
+    width:42px;height:42px;padding:0;
+    display:flex;align-items:center;justify-content:center;
+    border:1.5px solid var(--ink);border-radius:0;background:var(--card);color:var(--ink);
+    box-shadow:3px 3px 0 var(--shadow);cursor:pointer;transition:background .15s;
+  }
+  .to-top:hover{background:var(--hoverbg)}
+
+  /* ---------- import / empty state ---------- */
+  .drop{
+    margin:28px 0;border:2px dashed var(--steel);background:var(--card);
+    padding:34px 22px;text-align:center;cursor:pointer;
+    transition:border-color .15s,background .15s;
+  }
+  .drop.dragover{border-color:var(--redline);background:var(--draghover)}
+  .drop h2{font-family:var(--display);font-size:26px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+  .drop p{color:var(--steel);font-size:14px;line-height:1.55;max-width:440px;margin:0 auto}
+  .drop .hint{font-family:var(--mono);font-size:11px;margin-top:14px;color:var(--steel)}
+  .drop input{display:none}
+  .drop-btn-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:16px}
+  .drop-btn{
+    display:inline-block;margin-top:0;padding:10px 22px;
+    background:var(--ink);color:var(--filltext);font-family:var(--display);
+    font-size:16px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;
+    border:1.5px solid var(--ink);cursor:pointer;
+  }
+  .drop-btn:hover{background:var(--fillhover)}
+  .drop-btn-outline{background:transparent;color:var(--ink)}
+  .drop-btn-outline:hover{background:var(--hoverbg)}
+  .fmt-note{
+    margin-top:18px;border-top:1px solid var(--line);padding-top:14px;
+    font-family:var(--mono);font-size:11px;color:var(--steel);text-align:left;
+    max-width:440px;margin-left:auto;margin-right:auto;line-height:1.7;
+  }
+  .fmt-note b{color:var(--ink);font-weight:500}
+  .parse-log{font-family:var(--mono);font-size:11.5px;margin-top:14px;color:var(--steel);text-align:left;max-width:440px;margin-left:auto;margin-right:auto}
+  .ok{color:var(--pass)}
+  .err{color:var(--redline)}
+
+  /* ---------- controls ---------- */
+  .controls{margin-top:18px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+  /* custom in-app dropdown (replaces native <select>, which pops the OS-level
+     picker on mobile instead of an in-app styled list) */
+  .dd{position:relative;max-width:100%;flex:0 1 auto;min-width:0}
+  .dd-btn{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    width:100%;max-width:280px;padding:8px 10px;
+    border:1.5px solid var(--ink);background:var(--card);color:var(--ink);
+    font-family:var(--mono);font-size:12.5px;cursor:pointer;
+  }
+  .dd-btn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dd-btn:hover{background:var(--hoverbg)}
+  .dd-btn .chev{flex:0 0 auto;transition:transform .15s}
+  .dd.open .dd-btn .chev{transform:rotate(180deg)}
+  .dd-list{
+    position:absolute;top:calc(100% + 4px);left:0;z-index:30;
+    min-width:100%;max-width:340px;max-height:260px;overflow-y:auto;
+    background:var(--card);border:1.5px solid var(--ink);box-shadow:4px 4px 0 var(--shadow);
+    list-style:none;font-family:var(--mono);font-size:12.5px;
+  }
+  .dd-list.hidden{display:none}
+  .dd-list li{padding:9px 12px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dd-list li:hover,.dd-list li.active{background:var(--hoverbg)}
+  .dd-list li[aria-selected="true"]{color:var(--redline)}
+  /* Notes / Q&A content-type toggle — filters which decks the subject dropdown lists.
+     Hidden entirely unless the loaded decks actually span both types (see renderTypeToggle()),
+     so a vault with only one kind of deck never shows a pointless two-way switch. */
+  .modes{display:flex;border:1.5px solid var(--ink);margin-top:10px;background:var(--card)}
+  .modes button{flex:1;padding:9px 4px;border:none;background:transparent;cursor:pointer;font-family:var(--display);font-size:15px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--steel)}
+  .modes button+button{border-left:1.5px solid var(--ink)}
+  .modes button.active{background:var(--ink);color:var(--filltext)}
+  .modes button:disabled{opacity:.35;cursor:default}
+  /* count of cards actually due for spaced-repetition review right now (see dueCardCount()) —
+     redline regardless of the tab's active/inactive state, since it's meant to draw the eye
+     the same way the star/qno accents do elsewhere, not blend into either background */
+  .due-badge{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--redline);margin-left:4px}
+  .chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{white-space:nowrap;font-family:var(--mono);font-size:11px;letter-spacing:.02em;padding:6px 11px;border:1.2px solid var(--line);background:var(--card);color:var(--steel);cursor:pointer}
+  .chip b{font-weight:500;color:inherit}
+  .chip.active{border-color:var(--redline);color:var(--redline)}
+  /* Notes mode gets its own accent (teal) instead of the app's red — .chip and .bar are shared
+     markup with the Q&A card view, so the swap is scoped to the notes-mode class toggled on
+     body in setMode() rather than changing the shared rule outright. */
+  body.notes-mode .chip.active{border-color:var(--teal);color:var(--teal)}
+  .addmore{font-family:var(--mono);font-size:11px;color:var(--steel);background:none;border:none;text-decoration:underline;cursor:pointer;padding:6px 0}
+  .mini-log{font-family:var(--mono);font-size:11px;width:100%}
+  .deck-filters{display:flex;align-items:center;gap:8px;padding-top:10px}
+  .filter-toggle{font-family:var(--mono);font-size:11px;background:var(--card);color:var(--steel);border:1px solid var(--line);cursor:pointer;padding:7px 9px}
+  .filter-toggle.active{color:var(--redline);border-color:var(--redline)}
+
+  /* ---------- card ---------- */
+  .stage{margin-top:16px}
+  /* Contains the card's slide-out/slide-in transform locally. The transition translates #card
+     a full 100% of its own width off-screen, and without a clipping ancestor close by, that
+     transiently expands the page's own scrollable width — which is what was flashing native
+     horizontal (and, via the reflow, vertical) scrollbars during a swipe on mobile. */
+  #cardStage{overflow-x:hidden}
+  .counter-line{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:11px;color:var(--steel);margin-bottom:8px}
+  .bar{height:4px;background:var(--line);margin-bottom:14px}
+  .bar i{display:block;height:100%;background:var(--redline);transition:width .2s}
+  body.notes-mode .bar i{background:var(--teal)}
+  .card{
+    background:var(--card);border:1.6px solid var(--ink);
+    box-shadow:4px 4px 0 var(--shadow);
+    outline:1px solid var(--ink);outline-offset:3px;
+    cursor:grab;user-select:none;touch-action:pan-y;
+    display:flex;flex-direction:column;min-height:320px;
+  }
+  .card:active{cursor:grabbing}
+  .card:focus-visible{outline:3px solid var(--redline);outline-offset:3px}
+  .card-body{flex:1;padding:22px 20px 16px;display:flex;flex-direction:column;gap:13px}
+  .eyebrow{display:flex;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em}
+  .eyebrow .qno{color:var(--redline);white-space:nowrap}
+  .eyebrow .chname{color:var(--steel);text-align:right;text-transform:uppercase;letter-spacing:.06em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+  .q-text{font-family:var(--display);font-size:24px;line-height:1.22;font-weight:600}
+  /* "review anyway" override shown when quiz mode has cards in scope but none are due yet
+     (see renderCard()'s empty-deck branch) — sized down explicitly since it sits inside
+     .q-text's large display-font paragraph and shouldn't inherit that sizing */
+  .review-anyway-btn{
+    display:inline-block;margin-top:14px;padding:9px 16px;
+    font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+    border:1.4px solid var(--ink);background:var(--card);color:var(--ink);cursor:pointer;
+  }
+  .review-anyway-btn:hover{background:var(--hoverbg)}
+  .a-text{font-size:15.5px;line-height:1.65;border-top:1px solid var(--line);padding-top:14px}
+  .a-hidden{color:var(--steel);font-family:var(--mono);font-size:12px;border-top:1px dashed var(--line);padding-top:14px}
+  
+  /* Inline Responsive Figure Layout Rules */
+  .card-body img, .qa-item img {
+    display: block;
+    max-width: 100%;
+    max-height: 240px;
+    height: auto;
+    object-fit: contain;
+    margin: 14px 0;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: #ffffff;
+  }
+  /* Notes chapters had no image constraint at all — an image wider than the ~680px content
+     column rendered at full native size and forced the whole page to scroll horizontally.
+     No max-height here (unlike the compact card/browse rule above): a chapter is a full-page
+     reading view with room for a tall diagram, so only width needs capping to fix the overflow. */
+  .chap-body img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 14px 0;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: #ffffff;
+  }
+  /* Images pasted in from a book/PDF are near-universally a light-background scan or diagram —
+     left alone, that's a bright white rectangle sitting in the middle of the dark theme. Inverting
+     lightness and rotating hue 180° flips the white background dark while roughly preserving the
+     original hues (a red diagram line stays reading as red, rather than becoming cyan the way a
+     plain invert(1) alone would). This is a poor fit for actual photographs — a face reads as
+     alien-toned — but photographs are a small minority of what gets pasted into study notes
+     compared to scanned text/diagrams, so it's the right default for this app's content mix. */
+  :root[data-theme="dark"] .chap-body img,
+  :root[data-theme="dark"] .card-body img,
+  :root[data-theme="dark"] .qa-item img {
+    filter: invert(0.92) hue-rotate(180deg);
+  }
+
+  sub,sup{font-size:.72em;line-height:0}
+
+  /* ---------- markdown-rendered content (Study card + Browse + foundation chapters) ---------- */
+  /* The global *{margin:0;padding:0} reset strips all native spacing/indent from
+     marked.parse() output, so every block-level element it can produce needs its
+     layout restored explicitly here. */
+  .a-text>*+*,.q-text>*+*,.qa-item .bq>*+*,.qa-item .ba>*+*{margin-top:10px}
+  /* Notes view gets more breathing room than Q&A cards — subsection headings especially, since
+     a heading marks the start of a new subsection and needs to read as more separated from the
+     preceding subsection's tail-end than two ordinary paragraphs do from each other. */
+  .chap-body>*+*{margin-top:16px}
+  .chap-body>*+h1,.chap-body>*+h2,.chap-body>*+h3,.chap-body>*+h4{margin-top:32px}
+  .a-text ul,.a-text ol,.q-text ul,.q-text ol,.qa-item ul,.qa-item ol,.chap-body ul,.chap-body ol{
+    padding-left:1.3em;
+  }
+  .a-text ul ul,.a-text ul ol,.a-text ol ul,.a-text ol ol,
+  .q-text ul ul,.q-text ul ol,.q-text ol ul,.q-text ol ol,
+  .qa-item ul ul,.qa-item ul ol,.qa-item ol ul,.qa-item ol ol,
+  .chap-body ul ul,.chap-body ul ol,.chap-body ol ul,.chap-body ol ol{margin-top:2px}
+  .a-text li,.q-text li,.qa-item li,.chap-body li{margin:4px 0}
+  .a-text li::marker,.q-text li::marker,.qa-item li::marker,.chap-body li::marker{color:var(--steel)}
+  .a-text blockquote,.q-text blockquote,.qa-item blockquote,.chap-body blockquote{
+    border-left:2px solid var(--line);padding-left:12px;color:var(--steel);
+  }
+
+  /* ---------- callouts (Design Note / Did You Know — see styleCallouts()) ---------- */
+  .callout{border-left:3px solid var(--steel);border-radius:0 4px 4px 0;padding:12px 14px}
+  /* Sized/weighted like the chap-body headings (h3-ish) rather than smaller than body text —
+     a callout title is meant to read as a section header that happens to sit in a colored box,
+     not a small caption line above the content. */
+  .callout-title{
+    display:flex;align-items:center;gap:8px;
+    font-family:var(--display);font-weight:700;text-transform:uppercase;
+    letter-spacing:.03em;font-size:1.15em;line-height:1.25;
+  }
+  .callout-icon{font-size:1.2em;line-height:1}
+  .callout-content{margin-top:6px;color:var(--ink)}
+  .callout-content>*+*{margin-top:8px}
+  .callout-note{border-left-color:var(--blue);background:color-mix(in srgb,var(--blue) 8%,var(--card))}
+  .callout-note .callout-title{color:var(--blue)}
+  .callout-info{border-left-color:var(--pass);background:color-mix(in srgb,var(--pass) 8%,var(--card))}
+  .callout-info .callout-title{color:var(--pass)}
+  .callout-insight{border-left-color:var(--orange);background:color-mix(in srgb,var(--orange) 8%,var(--card))}
+  .callout-insight .callout-title{color:var(--orange)}
+  .callout-warn{border-left-color:var(--brown);background:color-mix(in srgb,var(--brown) 8%,var(--card))}
+  .callout-warn .callout-title{color:var(--brown)}
+  .a-text code,.q-text code,.qa-item code,.chap-body code{
+    font-family:var(--mono);font-size:.9em;background:var(--eqbg);
+    padding:.1em .35em;border-radius:3px;
+  }
+  .a-text pre,.q-text pre,.qa-item pre,.chap-body pre{
+    font-family:var(--mono);background:var(--eqbg);
+    padding:10px 12px;overflow-x:auto;border-radius:3px;
+  }
+  .a-text pre,.q-text pre{font-size:12.5px}
+  .qa-item pre,.chap-body pre{font-size:calc(12.5px * var(--browse-scale))}
+  .a-text pre code,.q-text pre code,.qa-item pre code,.chap-body pre code{background:none;padding:0}
+
+  /* foundation chapter body: general prose, so it needs heading and hr treatment that
+     Q/A content never required (a question/answer is never itself a heading) */
+  .chap-body{
+    font-size:calc(15px * var(--browse-scale));line-height:1.65;color:var(--ink);
+    padding:12px 14px;border-top:1px solid var(--line);
+  }
+  .chap-body h1,.chap-body h2,.chap-body h3,.chap-body h4{
+    font-family:var(--display);font-weight:600;text-transform:uppercase;
+    letter-spacing:.03em;color:var(--ink);line-height:1.25;
+  }
+  .chap-body h1,.chap-body h2{font-size:calc(19px * var(--browse-scale))}
+  .chap-body h3{font-size:calc(16px * var(--browse-scale))}
+  .chap-body h4{font-size:calc(14px * var(--browse-scale))}
+  .chap-body hr{border:none;border-top:1px solid var(--line);margin:4px 0}
+  .chap-body strong{font-weight:600;color:var(--ink)}
+
+  /* markdown/docx table rendering — the scroll container is a dedicated wrapper
+     (not the flex-item text block itself), so a wide table can scroll sideways
+     without disabling flexbox's automatic min-height on .q-text/.a-text (setting
+     overflow-x alone on a flex item forces overflow-y:auto too, which silently
+     lets the item shrink below its content height — that caused short questions
+     to render inside a spurious vertical scrollbox). */
+  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
+
+  /* Long KaTeX equations (especially $$ display $$ math) render at their natural width with
+     no line-breaking, so a wide formula would otherwise force the whole card to overflow.
+     Neither class is ever itself a flex item (they're nested deep inside .q-text/.a-text's
+     rendered content), so unlike the flex-item text blocks above, giving them overflow-x
+     directly is safe — no flexbox min-height side effect to worry about here. */
+  .katex-display{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding:2px 0}
+  .katex{max-width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+  .a-text table,.q-text table,.qa-item table,.chap-body table{
+    border-collapse:collapse;line-height:1.4;min-width:100%;
+  }
+  .a-text table,.q-text table{font-size:13px}
+  .qa-item table,.chap-body table{font-size:calc(13px * var(--browse-scale))}
+  .a-text th,.a-text td,.q-text th,.q-text td,.qa-item th,.qa-item td,.chap-body th,.chap-body td{
+    border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top;
+  }
+  .a-text th,.q-text th,.qa-item th,.chap-body th{
+    background:var(--eqbg);font-family:var(--mono);font-weight:600;
+    letter-spacing:.03em;text-transform:uppercase;color:var(--ink);
+  }
+  .a-text th,.q-text th{font-size:11px}
+  .qa-item th,.chap-body th{font-size:calc(11px * var(--browse-scale))}
+  .a-text tr:nth-child(even) td,.q-text tr:nth-child(even) td,.qa-item tr:nth-child(even) td,.chap-body tr:nth-child(even) td{
+    background:var(--hoverbg);
+  }
+  /* title block — the drawing-stamp footer */
+  .tblock{display:grid;grid-template-columns:1.1fr 1fr auto auto;border-top:1.6px solid var(--ink);font-family:var(--mono);font-size:9.5px;letter-spacing:.03em;color:var(--steel)}
+  .tblock div{padding:6px 8px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tblock div+div{border-left:1px solid var(--line)}
+  .tblock b{display:block;color:var(--ink);font-weight:500;font-size:10.5px;overflow:hidden;text-overflow:ellipsis}
+  .tb-star,.tb-note{
+    display:flex;align-items:center;justify-content:center;
+    padding:0 14px;border:none;border-left:1px solid var(--line);
+    background:transparent;color:var(--steel);cursor:pointer;
+  }
+  .tb-star:hover,.tb-note:hover{background:var(--hoverbg)}
+  .tb-star.starred{color:var(--redline)}
+  .tb-star.starred .tb-star-icon{fill:currentColor}
+  .tb-star:disabled,.tb-note:disabled{opacity:.35;cursor:default}
+  .tb-note.has-note{color:var(--redline)}
+
+  /* ---------- card note panel ---------- */
+  .note-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:39}
+  .note-backdrop.hidden{display:none}
+  .note-panel{
+    position:fixed;left:0;right:0;bottom:0;z-index:40;
+    background:var(--card);border-top:1.6px solid var(--ink);box-shadow:0 -4px 0 var(--shadow);
+    padding:16px;max-height:70vh;overflow-y:auto;
+  }
+  .note-panel.hidden{display:none}
+  .note-panel-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--steel);margin-bottom:8px}
+  .note-textarea{
+    width:100%;min-height:140px;padding:10px 12px;border:1.4px solid var(--line);
+    background:var(--card);color:var(--ink);font:14px/1.5 var(--body);resize:vertical;
+  }
+  .note-rendered{font-size:14px;line-height:1.55;color:var(--ink);min-height:60px}
+  .note-rendered.hidden{display:none}
+  .note-rendered>*+*{margin-top:8px}
+  .note-rendered ul,.note-rendered ol{padding-left:1.3em}
+  .note-rendered li{margin:3px 0}
+  .note-rendered li::marker{color:var(--steel)}
+  .note-rendered blockquote{border-left:2px solid var(--line);padding-left:12px;color:var(--steel)}
+  .note-rendered code{font-family:var(--mono);font-size:.9em;background:var(--eqbg);padding:.1em .35em;border-radius:3px}
+  .note-textarea:focus{outline:2px solid var(--redline);outline-offset:1px}
+  .note-tier{font-family:var(--mono);font-size:10.5px;color:var(--steel);margin-top:8px}
+  .note-tier.tier1{color:var(--pass)}
+  .note-actions{display:flex;gap:8px;margin-top:12px}
+  .note-actions button{
+    flex:1;padding:11px 6px;border:1.6px solid var(--ink);background:var(--card);
+    font-family:var(--display);font-size:14px;font-weight:600;letter-spacing:.06em;
+    text-transform:uppercase;cursor:pointer;color:var(--ink);
+  }
+  .note-actions button:hover{background:var(--hoverbg)}
+  .note-actions .note-save{background:var(--ink);color:var(--filltext)}
+  .note-actions .note-save:hover{background:var(--fillhover)}
+  @media (min-width:560px){
+    .note-backdrop{display:none!important}
+    .note-panel{
+      position:static;z-index:auto;
+      border-top:none;border:1.6px solid var(--ink);box-shadow:4px 4px 0 var(--shadow);
+      margin-top:14px;max-height:none;
+    }
+  }
+
+  .nav{display:flex;gap:8px;margin-top:14px}
+  .nav button{flex:1;padding:12px 6px;border:1.6px solid var(--ink);background:var(--card);font-family:var(--display);font-size:15px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;color:var(--ink)}
+  .nav button:hover{background:var(--hoverbg)}
+  .nav button:disabled{opacity:.35;cursor:default}
+  .nav .chap-label{flex:1.4;display:flex;align-items:center;justify-content:center;text-align:center;font-family:var(--mono);font-size:11px;color:var(--steel);text-transform:uppercase;letter-spacing:.04em;padding:0 6px}
+  .nav .primary{background:var(--ink);color:var(--filltext)}
+  .nav .primary:hover{background:var(--fillhover)}
+  .grade{display:flex;gap:8px;margin-top:14px}
+  .grade button{flex:1;padding:13px 6px;border:none;cursor:pointer;font-family:var(--display);font-size:16px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff}
+  .g-miss{background:var(--redline)}
+  .g-pass{background:var(--pass)}
+  .grade button:hover{filter:brightness(.93)}
+
+  /* ---------- header settings menu ---------- */
+  .settings-wrap{position:relative}
+  .settings-panel{
+    position:absolute;top:calc(100% + 6px);right:0;z-index:30;
+    width:260px;max-width:calc(100vw - 32px);
+    background:var(--card);border:1.5px solid var(--ink);box-shadow:4px 4px 0 var(--shadow);
+    padding:6px 0;font-family:var(--mono);font-size:12px;
+  }
+  .settings-panel.hidden{display:none}
+  .settings-action{
+    display:block;width:100%;text-align:left;padding:10px 14px;
+    border:none;background:none;color:var(--ink);cursor:pointer;font:inherit;
+  }
+  .settings-action:hover{background:var(--hoverbg)}
+  .settings-action.danger{color:var(--redline)}
+  .settings-divider{height:1px;background:var(--line);margin:4px 0}
+  .settings-decklist{max-height:220px;overflow-y:auto}
+  .settings-deck-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 14px}
+  .settings-deck-actions{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+  .settings-deck-row:hover{background:var(--hoverbg)}
+  .settings-deck-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .settings-del{flex:0 0 auto;border:none;background:none;color:var(--steel);cursor:pointer;padding:2px 4px;font-size:13px}
+  .settings-del:hover{color:var(--redline)}
+  .settings-section{padding:10px 14px}
+  .settings-label{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--steel);margin-bottom:8px}
+  .settings-textsize{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .settings-step{
+    width:34px;height:32px;border:1.4px solid var(--ink);background:var(--card);color:var(--ink);
+    font-family:var(--mono);font-size:13px;font-weight:600;cursor:pointer;
+  }
+  .settings-step:hover{background:var(--hoverbg)}
+  .settings-step:disabled{opacity:.35;cursor:default}
+  .settings-textsize-val{font-family:var(--mono);font-size:12px;color:var(--steel);min-width:40px;text-align:center}
+
+  /* ---------- study timer (popup contents — see .timer-panel above) ---------- */
+  .timer-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+  .timer-phase{font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--steel)}
+  .timer-phase.break{color:var(--pass)}
+  .timer-clock{font-family:var(--mono);font-size:24px;font-weight:600;color:var(--ink)}
+  .timer-session-progress{font-family:var(--mono);font-size:11px;color:var(--steel);margin-bottom:10px}
+  .timer-session-progress.goal-reached{color:var(--pass)}
+  .timer-actions{display:flex;gap:8px;margin-bottom:10px}
+  .timer-actions .settings-step{flex:1;width:auto;height:36px}
+  .timer-tick-toggle{display:block;width:100%;text-align:center;margin-bottom:10px}
+  /* Grid (not flex + space-between) so the −/+ buttons land in fixed columns across rows —
+     "Work"/"Break"/"Sessions" are different lengths, which under space-between shifted each
+     row's buttons sideways by however wide that row's own label happened to be. */
+  .timer-duration-row{display:grid;grid-template-columns:minmax(58px,auto) 34px 1fr 34px;align-items:center;gap:8px;margin-top:6px}
+  .timer-duration-label{font-family:var(--mono);font-size:11px;color:var(--steel)}
+
+  /* ---------- read notes aloud (voice picker) ---------- */
+  .voice-select{
+    width:100%;padding:8px 10px;margin-bottom:10px;
+    border:1.4px solid var(--ink);background:var(--card);color:var(--ink);
+    font-family:var(--mono);font-size:12px;cursor:pointer;
+  }
+  #readAloudSection .settings-textsize{margin-bottom:10px}
+
+  /* ---------- quiz results ---------- */
+  .result{background:var(--card);border:1.6px solid var(--ink);box-shadow:4px 4px 0 var(--shadow);padding:26px 20px;text-align:center}
+  .result .score{font-family:var(--display);font-size:56px;font-weight:700;line-height:1}
+  .result .score small{font-size:22px;color:var(--steel)}
+  .result p{font-family:var(--mono);font-size:12px;color:var(--steel);margin-top:8px}
+  /* Snapshot of the deck's SRS state after this run — New/Learning/Mature use Anki's convention
+     (21-day interval as the young/mature cutoff); Due Tomorrow/This Week look forward from now,
+     deliberately excluding anything already due (that's the header's due badge instead). */
+  .result-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(76px,1fr));gap:10px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+  .result-stats.hidden{display:none}
+  .result-stat{display:flex;flex-direction:column;align-items:center;gap:2px}
+  .result-stat b{font-family:var(--display);font-size:20px;font-weight:700;color:var(--ink)}
+  .result-stat span{font-family:var(--mono);font-size:9px;letter-spacing:.04em;text-transform:uppercase;color:var(--steel);white-space:nowrap}
+  .missed-list{text-align:left;margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
+  .missed-list h3{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--redline);margin-bottom:8px}
+  .missed-list li{font-size:13.5px;line-height:1.5;margin:0 0 6px 18px}
+
+  /* ---------- browse ---------- */
+  .search{width:100%;padding:11px 12px;border:1.6px solid var(--ink);background:var(--card);font-family:var(--body);font-size:14px;margin-top:14px}
+  .search:focus{outline:2px solid var(--redline);outline-offset:1px}
+  .chap{margin-top:24px;background:var(--card);border:1.4px solid var(--ink)}
+  .chap>summary{list-style:none;cursor:pointer;padding:12px 14px;font-family:var(--display);font-size:calc(17px * var(--browse-scale));font-weight:600;letter-spacing:.04em;text-transform:uppercase;display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+  .chap>summary::-webkit-details-marker{display:none}
+  .chap>summary .n{font-family:var(--mono);font-size:calc(10.5px * var(--browse-scale));color:var(--steel);text-transform:none;letter-spacing:0;white-space:nowrap}
+  .qa-item{border-top:1px solid var(--line);padding:12px 14px}
+  .qa-item .bq{font-weight:600;font-size:calc(15px * var(--browse-scale));line-height:1.45}
+  .qa-item .ba{font-size:calc(15px * var(--browse-scale));line-height:1.62;color:var(--ink);margin-top:6px}
+  .qa-lbl{color:var(--redline);font-family:var(--mono);font-size:calc(12px * var(--browse-scale))}
+  .qa-item .ba .qa-lbl{color:var(--steel)}
+  .empty-note{font-family:var(--mono);font-size:calc(12px * var(--browse-scale));color:var(--steel);text-align:center;margin-top:24px}
+
+  .hidden{display:none!important}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+  @media (min-width:560px){
+    .q-text{font-size:28px}
+    .card{min-height:360px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-inner">
+    <div class="brand">Review <span class="rev">Deck</span></div>
+    <div class="head-right">
+      <div class="timer-wrap" id="timerWrap">
+        <button class="timer-btn" id="timerBtn" type="button" aria-label="Study timer" aria-haspopup="dialog" aria-expanded="false" title="Study timer">
+          <svg class="timer-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"></circle>
+            <polyline points="12 7 12 12 15.5 13.5"></polyline>
+          </svg>
+          <span class="timer-btn-clock hidden" id="timerBtnClock">25:00</span>
+        </button>
+        <div class="timer-panel hidden" id="timerPanel" role="dialog" aria-label="Study timer">
+          <div class="timer-row">
+            <span class="timer-phase" id="timerPhase">WORK</span>
+            <span class="timer-clock" id="timerClock">25:00</span>
+          </div>
+          <div class="timer-session-progress" id="timerSessionProgress">Session 1 / 4</div>
+          <div class="timer-actions">
+            <button class="settings-step" id="timerToggleBtn" type="button">Start</button>
+            <button class="settings-step" id="timerResetBtn" type="button">Reset</button>
+          </div>
+          <button class="filter-toggle timer-tick-toggle" id="tickSoundBtn" type="button" aria-pressed="false">○ Tick sound (work only)</button>
+          <div class="timer-duration-row">
+            <span class="timer-duration-label">Work</span>
+            <button class="settings-step" id="workMinDec" type="button" aria-label="Decrease work duration">−</button>
+            <span class="settings-textsize-val" id="workMinVal">25m</span>
+            <button class="settings-step" id="workMinInc" type="button" aria-label="Increase work duration">+</button>
+          </div>
+          <div class="timer-duration-row">
+            <span class="timer-duration-label">Break</span>
+            <button class="settings-step" id="breakMinDec" type="button" aria-label="Decrease break duration">−</button>
+            <span class="settings-textsize-val" id="breakMinVal">5m</span>
+            <button class="settings-step" id="breakMinInc" type="button" aria-label="Increase break duration">+</button>
+          </div>
+          <div class="timer-duration-row">
+            <span class="timer-duration-label">Sessions</span>
+            <button class="settings-step" id="sessionGoalDec" type="button" aria-label="Decrease number of study sessions">−</button>
+            <span class="settings-textsize-val" id="sessionGoalVal">4</span>
+            <button class="settings-step" id="sessionGoalInc" type="button" aria-label="Increase number of study sessions">+</button>
+          </div>
+        </div>
+      </div>
+      <button class="theme-toggle hidden" id="typeFilterToggle" type="button" aria-label="Switch between Q/A and Notes decks" title="Switch between Q/A and Notes decks">
+        <svg class="icon-cards" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="7" y="2" width="15" height="11" rx="1.5"></rect>
+          <rect x="2" y="9" width="15" height="11" rx="1.5" fill="var(--card)"></rect>
+          <path d="M6.6 14a2 2 0 1 1 2.7 1.87c-.6.3-1 .8-1 1.46"></path>
+          <line x1="8.3" y1="19.8" x2="8.3" y2="19.8"></line>
+        </svg>
+        <svg class="icon-book" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="5" y="3" width="16" height="18" rx="1"></rect>
+          <line x1="2" y1="7" x2="5" y2="7"></line>
+          <line x1="2" y1="12" x2="5" y2="12"></line>
+          <line x1="2" y1="17" x2="5" y2="17"></line>
+          <line x1="9" y1="9" x2="17" y2="9"></line>
+          <line x1="9" y1="14" x2="17" y2="14"></line>
+        </svg>
+      </button>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+      <div class="settings-wrap" id="settingsWrap">
+        <button class="theme-toggle" id="settingsBtn" type="button" aria-label="Settings" aria-haspopup="dialog" aria-expanded="false" title="Settings">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+        <div class="settings-panel hidden" id="settingsPanel" role="dialog" aria-label="Settings">
+          <div class="settings-section">
+            <div class="settings-label">Text size</div>
+            <div class="settings-textsize">
+              <button class="settings-step" id="textSizeDec" type="button" aria-label="Decrease browse text size">A−</button>
+              <span class="settings-textsize-val" id="textSizeVal">100%</span>
+              <button class="settings-step" id="textSizeInc" type="button" aria-label="Increase browse text size">A+</button>
+            </div>
+          </div>
+          <div class="settings-divider hidden" id="readAloudDivider"></div>
+          <div class="settings-section hidden" id="readAloudSection">
+            <div class="settings-label">Read notes aloud</div>
+            <select class="voice-select" id="voiceSelect" aria-label="Voice"></select>
+            <div class="settings-textsize">
+              <button class="settings-step" id="speedDec" type="button" aria-label="Decrease read-aloud speed">−</button>
+              <span class="settings-textsize-val" id="speedVal">1x</span>
+              <button class="settings-step" id="speedInc" type="button" aria-label="Increase read-aloud speed">+</button>
+            </div>
+            <div class="timer-actions">
+              <button class="settings-step" id="readAloudToggleBtn" type="button">▶ Play</button>
+              <button class="settings-step" id="readAloudStopBtn" type="button" disabled>■ Stop</button>
+            </div>
+          </div>
+          <div id="deckManageSection" class="hidden">
+            <div class="settings-divider"></div>
+            <button class="settings-action" id="shuffleAction" type="button">⤨ Shuffle current deck</button>
+            <div class="settings-divider"></div>
+            <button class="settings-action" id="recheckAction" type="button" title="Re-reads every deck that was loaded via folder import, to pick up edits made outside the app">⟳ Recheck files for updates</button>
+            <div class="mini-log" id="recheckLog"></div>
+            <div class="settings-divider"></div>
+            <div class="settings-decklist" id="settingsDeckList"></div>
+            <div class="settings-divider"></div>
+            <button class="settings-action danger" id="clearAllAction" type="button">✕ Clear all decks</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section id="importView">
+    <div class="drop" id="dropZone" role="button" tabindex="0" aria-label="Load study guide files">
+      <h2>Load a Q&amp;A guide</h2>
+      <p>Drop in one or more study guides and this page turns them into flashcards, quizzes, and a searchable reference. Everything is read locally in your browser — nothing is uploaded anywhere.</p>
+      <div class="drop-btn-row">
+        <button class="drop-btn" type="button">Choose files</button>
+        <button class="drop-btn drop-btn-outline" type="button" id="folderBtn">Import folder</button>
+      </div>
+      <div class="hint">IMPORT A FOLDER TO PULL IN ALL DECKS + IMAGES AT ONCE · SUPPORTS ![[OBSIDIAN EMBEDS]] · OR CHOOSE INDIVIDUAL FILES (.DOCX / .MD / .TXT)</div>
+      <input type="file" id="fileInput" accept=".docx,.md,.markdown,.txt" multiple>
+      <div class="fmt-note">
+        <b>EXPECTED LAYOUT</b><br>
+        Headings (or <b># Markdown headings</b>) become chapters.<br>
+        Lines starting with <b>Q.</b> / <b>Q:</b> become questions.<br>
+        Lines starting with <b>A.</b> / <b>A:</b> become answers.<br>
+        Equations typed inside <b>$ ... $</b> or <b>$$ ... $$</b> will render in typeset math layout.<br>
+        Images: standard <b>![alt](file.png)</b> or Obsidian embeds <b>![[file.png]]</b> / <b>![[file.png|caption]]</b> — folder import resolves these against every image found in the folder tree.
+      </div>
+      <div class="parse-log" id="parseLog"></div>
+    </div>
+  </section>
+
+  <section id="appView" class="hidden">
+    <div class="controls">
+      <div class="row">
+        <div class="dd" id="subjectDD">
+          <button type="button" class="dd-btn" id="subjectDDBtn" aria-haspopup="listbox" aria-expanded="false" aria-label="Loaded deck">
+            <span id="subjectDDLabel">—</span>
+            <svg class="chev" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <ul class="dd-list hidden" id="subjectDDList" role="listbox" aria-label="Loaded deck" tabindex="-1"></ul>
+        </div>
+        <button class="addmore" id="addMoreBtn" type="button">+ add file</button>
+        <button class="addmore" id="addFolderBtn" type="button">+ add folder</button>
+        <input type="file" id="fileInput2" accept=".docx,.md,.markdown,.txt" multiple style="display:none">
+        <div class="mini-log" id="miniLog"></div>
+      </div>
+      <div class="modes" id="modesRow" role="tablist">
+        <button id="mStudy" class="active" role="tab">Study</button>
+        <button id="mQuiz" role="tab">Quiz<span class="due-badge hidden" id="quizDueBadge"></span></button>
+        <button id="mBrowse" role="tab">Browse</button>
+      </div>
+      <div class="chips" id="chapChips"></div>
+      <div class="deck-filters" id="deckFilters"><button id="starFilterBtn" class="filter-toggle" type="button" aria-pressed="false">☆ STARRED ONLY</button></div>
+    </div>
+
+    <div class="stage" id="cardStage">
+      <div class="counter-line">
+        <span id="posLabel"></span>
+        <span id="scoreLabel"></span>
+      </div>
+      <div class="bar"><i id="barFill" style="width:0%"></i></div>
+
+      <div class="card" id="card" tabindex="0" aria-live="polite">
+        <div class="card-body">
+          <div class="eyebrow">
+            <span class="qno" id="qLabel">Q-001</span>
+            <span class="chname" id="chName"></span>
+          </div>
+          <div class="q-text" id="qText"></div>
+          <div class="a-hidden" id="aHidden">TAP CARD TO REVEAL ANSWER</div>
+          <div class="a-text hidden" id="aText"></div>
+        </div>
+        <div class="tblock">
+          <div><b id="tbSubject">—</b>DECK</div>
+          <div><b id="tbSheet">—</b>SHEET</div>
+          <button class="tb-note" id="noteBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Add a note to this card">
+            <svg class="tb-note-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+              <path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"></path>
+              <line x1="9" y1="13" x2="15" y2="13"></line>
+              <line x1="9" y1="17" x2="13" y2="17"></line>
+            </svg>
+          </button>
+          <button class="tb-star" id="starBtn" type="button" aria-pressed="false" aria-label="Star this card">
+            <svg class="tb-star-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="note-backdrop hidden" id="noteBackdrop"></div>
+      <div class="note-panel hidden" id="notePanel" role="dialog" aria-label="Card note">
+        <div class="note-panel-label">Note</div>
+        <div class="note-rendered" id="noteRendered"></div>
+        <textarea class="note-textarea hidden" id="noteTextarea" placeholder="Add a note… (supports **bold**, *italic*, lists, etc.)"></textarea>
+        <div class="note-tier" id="noteTierText"></div>
+        <div class="note-actions" id="noteViewActions">
+          <button type="button" id="noteCloseBtn">Close</button>
+          <button type="button" class="note-save" id="noteEditBtn">Edit</button>
+        </div>
+        <div class="note-actions hidden" id="noteEditActions">
+          <button type="button" id="noteCancelBtn">Cancel</button>
+          <button type="button" class="note-save" id="noteSaveBtn">Save</button>
+        </div>
+      </div>
+
+      <div class="nav" id="studyNav">
+        <button id="prevBtn" type="button">◀ Prev</button>
+        <button id="flipBtn" class="primary" type="button">Reveal</button>
+        <button id="nextBtn" type="button">Next ▶</button>
+      </div>
+      <div class="grade hidden" id="quizGrade">
+        <button class="g-miss" id="missBtn" type="button">✕ Missed</button>
+        <button class="g-pass" id="passBtn" type="button">✓ Got it</button>
+      </div>
+    </div>
+
+    <div class="stage hidden" id="resultStage">
+      <div class="result">
+        <div class="score" id="scoreBig">0<small>/0</small></div>
+        <p id="scoreNote">RUN COMPLETE</p>
+        <div class="result-stats hidden" id="resultStats">
+          <div class="result-stat"><b id="rsNew">0</b><span>New</span></div>
+          <div class="result-stat"><b id="rsLearning">0</b><span>Learning</span></div>
+          <div class="result-stat"><b id="rsMature">0</b><span>Mature</span></div>
+          <div class="result-stat"><b id="rsDueTomorrow">0</b><span>Due Tomorrow</span></div>
+          <div class="result-stat"><b id="rsDueWeek">0</b><span>Due This Week</span></div>
+        </div>
+        <div class="missed-list hidden" id="missedWrap">
+          <h3>MARKED FOR REVIEW</h3>
+          <ul id="missedList"></ul>
+        </div>
+        <div class="nav">
+          <button id="retryMissedBtn" type="button">Retry missed</button>
+          <button id="restartBtn" class="primary" type="button">New run</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage hidden" id="browseStage">
+      <input type="search" class="search" id="searchBox" placeholder="Search questions and answers…">
+      <div id="browseList"></div>
+    </div>
+
+    <div class="stage hidden" id="foundationStage">
+      <div class="notes-progress">
+        <div class="counter-line">
+          <span id="fPosLabel"></span>
+          <div class="toc" id="tocDD">
+            <button type="button" class="toc-btn" id="tocToggleBtn" aria-haspopup="listbox" aria-expanded="false" aria-label="Table of contents">☰ CONTENTS</button>
+            <ul class="toc-list hidden" id="tocList" role="listbox" aria-label="Table of contents" tabindex="-1"></ul>
+          </div>
+        </div>
+        <div class="bar"><i id="fBarFill" style="width:0%"></i></div>
+      </div>
+      <div id="foundationList"></div>
+      <div class="nav hidden" id="foundationNav">
+        <button id="fPrevBtn" type="button">◀ Previous</button>
+        <span id="fChapLabel" class="chap-label"></span>
+        <button id="fNextBtn" type="button">Next ▶</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<button class="to-top hidden" id="toTopBtn" type="button" aria-label="Scroll to top" title="Scroll to top">
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"></polyline></svg>
+</button>
+
+<!-- Shared folder-picker fallback input for both "Import folder" entry points. Deliberately
+     kept outside any click-to-open-a-different-picker container (like #dropZone), since
+     programmatically calling .click() on it dispatches a real click event that would
+     otherwise bubble into such a container's own handler. -->
+<input type="file" id="folderInput" webkitdirectory multiple style="display:none">
+
+<script>
+"use strict";
+
+// ================= state =================
+const state = {
+  subjects: [],
+  subjectIdx: 0,
+  chapterFilter: -1,
+  mode: "study",
+  typeFilter: "qa", // "qa" | "foundation" — which decks the subject dropdown currently lists
+  deck: [],
+  pos: 0,
+  revealed: false,
+  quiz: { active:false, correct:0, missed:[] },
+  starredOnly: false,
+  reviewAllDue: false, // session-only override: show every card in scope even if none are due yet
+  lastQaSubject: null, // last deck/note actually viewed per type — see rememberCurrentSubject()
+  lastFoundationSubject: null,
+};
+
+const $ = id => document.getElementById(id);
+
+// ================= Storage Persistence (IndexedDB) =================
+const DB_NAME = "QAReviewDeckDB";
+const STORE_NAME = "subjectsStore"; // legacy per-subject store — see loadSubjectsFromDB()
+const META_STORE = "metaStore";
+const SUBJECTS_META_KEY = "__subjects__";
+
+function initDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 2);
+    request.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: "name" });
+      }
+      if (!db.objectStoreNames.contains(META_STORE)) {
+        db.createObjectStore(META_STORE, { keyPath: "key" });
+      }
+    };
+    request.onsuccess = e => resolve(e.target.result);
+    request.onerror = e => reject(e.target.error);
+  });
+}
+
+// Subjects are stored as a single blob under one meta key, not one-record-per-subject. They
+// used to live one-per-record in a dedicated store keyed by deck NAME alone — which silently
+// broke the moment a Q&A deck and a same-named foundation note became a legitimate, intentional
+// pairing: saving both meant the second store.put() overwrote the first under the identical
+// key, permanently losing it (invisible until the next reload, when only one of the pair came
+// back — and if that dropped the last deck of one type, the Q/A⇄Notes toggle vanished too).
+// Storing the whole array atomically sidesteps per-subject key collisions entirely.
+async function saveSubjectsToDB(subjects) {
+  await saveMeta(SUBJECTS_META_KEY, subjects);
+}
+
+async function loadSubjectsFromDB() {
+  const blob = await loadMeta(SUBJECTS_META_KEY);
+  if (Array.isArray(blob) && blob.length) return blob;
+  // One-time recovery for anyone reloading right after this fix ships: read whatever's left in
+  // the old per-record store (a same-named pair may have already lost one side to the overwrite
+  // bug above, but anything still there is worth recovering), then migrate it forward so this
+  // fallback is never needed again on subsequent loads.
+  try {
+    const db = await initDB();
+    const legacy = await new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, "readonly");
+      const request = tx.objectStore(STORE_NAME).getAll();
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => reject(request.error);
+    });
+    if (legacy.length) await saveMeta(SUBJECTS_META_KEY, legacy);
+    return legacy;
+  } catch (e) {
+    console.error("Failed to load decks from local storage:", e);
+    return [];
+  }
+}
+
+async function saveMeta(key, value) {
+  try {
+    const db = await initDB();
+    const tx = db.transaction(META_STORE, "readwrite");
+    tx.objectStore(META_STORE).put({ key, value });
+    return new Promise(resolve => tx.oncomplete = resolve);
+  } catch (e) {
+    console.error("Failed to save setting:", e);
+  }
+}
+
+async function loadMeta(key) {
+  try {
+    const db = await initDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(META_STORE, "readonly");
+      const request = tx.objectStore(META_STORE).get(key);
+      request.onsuccess = () => resolve(request.result ? request.result.value : null);
+      request.onerror = () => reject(request.error);
+    });
+  } catch (e) {
+    console.error("Failed to load setting:", e);
+    return null;
+  }
+}
+
+// ================= theme (light / dark) =================
+function applyTheme(theme){
+  document.documentElement.setAttribute("data-theme", theme);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute("content", theme === "dark" ? "#181F25" : "#FDFDFB");
+}
+
+async function initTheme(){
+  let saved = null;
+  try { saved = await loadMeta("theme"); } catch(e){}
+  const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  applyTheme(saved || (prefersDark ? "dark" : "light"));
+}
+
+async function toggleTheme(){
+  const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  applyTheme(next);
+  await saveMeta("theme", next);
+}
+
+// ================= browse text size =================
+const BROWSE_SCALE_MIN = 0.8, BROWSE_SCALE_MAX = 1.6, BROWSE_SCALE_STEP = 0.1;
+let browseScale = 1;
+
+function applyBrowseScale(scale){
+  browseScale = Math.round(Math.min(BROWSE_SCALE_MAX, Math.max(BROWSE_SCALE_MIN, scale)) * 100) / 100;
+  document.documentElement.style.setProperty("--browse-scale", String(browseScale));
+  $("textSizeVal").textContent = Math.round(browseScale * 100) + "%";
+  $("textSizeDec").disabled = browseScale <= BROWSE_SCALE_MIN;
+  $("textSizeInc").disabled = browseScale >= BROWSE_SCALE_MAX;
+}
+
+async function initBrowseScale(){
+  let saved = null;
+  try { saved = await loadMeta("browseScale"); } catch(e){}
+  applyBrowseScale(typeof saved === "number" ? saved : 1);
+}
+
+async function stepBrowseScale(delta){
+  applyBrowseScale(browseScale + delta);
+  await saveMeta("browseScale", browseScale);
+}
+
+// ================= study timer (Pomodoro) =================
+// Lives entirely in Settings (controls) plus a small header badge (ambient visibility while
+// running, across every mode — not just Study/Quiz). Only the work/break durations persist
+// across reloads; a running session does not (resets to a fresh "work" phase on load), same as
+// mode/chapterFilter — simpler than trying to account for time elapsed while the tab was closed.
+const TIMER_MIN_MINUTES = 1, TIMER_MAX_MINUTES = 90;
+const TIMER_MIN_SESSIONS = 1, TIMER_MAX_SESSIONS = 12;
+const timerState = {
+  phase: "work",      // "work" | "break"
+  running: false,
+  remaining: 25 * 60,  // seconds left in the current phase
+  workMin: 25,
+  breakMin: 5,
+  sessionGoal: 4,       // how many work sessions to auto-stop after
+  sessionsCompleted: 0, // work sessions finished since the last Reset — not persisted, see initTimer()
+  goalReached: false,
+};
+let timerInterval = null;
+
+function formatClock(totalSeconds){
+  const m = Math.floor(totalSeconds / 60), s = totalSeconds % 60;
+  return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+}
+
+function renderTimer(){
+  const clock = formatClock(Math.max(0, timerState.remaining));
+  const onBreak = timerState.phase === "break";
+  $("timerClock").textContent = clock;
+  $("timerPhase").textContent = onBreak ? "BREAK" : "WORK";
+  $("timerPhase").classList.toggle("break", onBreak);
+  $("timerToggleBtn").textContent = timerState.running ? "Pause" : "Start";
+  $("workMinVal").textContent = timerState.workMin + "m";
+  $("breakMinVal").textContent = timerState.breakMin + "m";
+  $("workMinDec").disabled = timerState.workMin <= TIMER_MIN_MINUTES;
+  $("workMinInc").disabled = timerState.workMin >= TIMER_MAX_MINUTES;
+  $("breakMinDec").disabled = timerState.breakMin <= TIMER_MIN_MINUTES;
+  $("breakMinInc").disabled = timerState.breakMin >= TIMER_MAX_MINUTES;
+  $("sessionGoalVal").textContent = timerState.sessionGoal;
+  $("sessionGoalDec").disabled = timerState.sessionGoal <= TIMER_MIN_SESSIONS;
+  $("sessionGoalInc").disabled = timerState.sessionGoal >= TIMER_MAX_SESSIONS;
+
+  // Clamp to sessionGoal: sessionsCompleted hits the goal as soon as the *work* half of the
+  // final session ends, but its break is still running at that point, so a plain "+1" would
+  // briefly overshoot ("Session 3 of 2") before goalReached takes over.
+  const currentSessionNum = Math.min(timerState.sessionsCompleted + 1, timerState.sessionGoal);
+  $("timerSessionProgress").textContent = timerState.goalReached
+    ? `Goal reached — ${timerState.sessionGoal} of ${timerState.sessionGoal} sessions`
+    : `Session ${currentSessionNum} of ${timerState.sessionGoal}`;
+  $("timerSessionProgress").classList.toggle("goal-reached", timerState.goalReached);
+
+  // The header button is always visible — only the inline countdown next to its icon toggles
+  // with running state, and its border/color tint follows the current phase regardless.
+  $("timerBtn").classList.toggle("break", onBreak);
+  $("timerBtnClock").classList.toggle("hidden", !timerState.running);
+  $("timerBtnClock").textContent = clock;
+}
+
+// Shared, lazily-created AudioContext for both the chime and the tick sound below — a tick
+// fires every second for the whole work phase, and browsers cap how many AudioContexts can
+// exist at once, so a fresh one per sound (as the chime alone used to do) isn't an option here.
+let timerAudioCtx = null;
+function getTimerAudioCtx(){
+  if (!timerAudioCtx) timerAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return timerAudioCtx;
+}
+
+// A short two-tone chime marking a phase change — synthesized via Web Audio rather than an
+// external asset, so it keeps working fully offline like the rest of the app. Audio can fail
+// silently in some contexts (autoplay restrictions, etc.); that's not worth surfacing as an
+// error, the visual phase change already carries the information.
+function playTimerChime(){
+  try {
+    const ctx = getTimerAudioCtx();
+    const now = ctx.currentTime;
+    [880, 660].forEach((freq, i) => {
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.frequency.value = freq;
+      osc.connect(gain); gain.connect(ctx.destination);
+      const t = now + i * 0.18;
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.2, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+      osc.start(t); osc.stop(t + 0.18);
+    });
+  } catch (e) { /* audio not available — silent is fine */ }
+}
+
+// A real clock tick is a short noise transient (a mechanical click), not a clean tone — a plain
+// oscillator beep reads as an electronic blip no matter how short it's made. Filtered white
+// noise gets much closer: one shared noise buffer (generating it fresh per tick would be wasted
+// work, since it repeats every second for the whole work phase) run through a narrow bandpass
+// filter to shape it into a "click" rather than a hiss.
+let tickNoiseBuffer = null;
+function getTickNoiseBuffer(ctx){
+  if (!tickNoiseBuffer || tickNoiseBuffer.sampleRate !== ctx.sampleRate){
+    const len = Math.ceil(ctx.sampleRate * 0.03);
+    tickNoiseBuffer = ctx.createBuffer(1, len, ctx.sampleRate);
+    const data = tickNoiseBuffer.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+  }
+  return tickNoiseBuffer;
+}
+
+// Off by default and never persisted (see the button wiring below) — has to stay unobtrusive
+// since it repeats every second for the whole work phase rather than firing once like the
+// phase-change chime. Alternates the filter pitch each call for a "tick-tock" feel, same as a
+// real clock's pendulum swinging between two slightly different mechanical positions.
+let tickSoundEnabled = false;
+let tickAlternate = false;
+function playTickSound(){
+  try {
+    const ctx = getTimerAudioCtx();
+    const now = ctx.currentTime;
+    const noise = ctx.createBufferSource();
+    noise.buffer = getTickNoiseBuffer(ctx);
+    const filter = ctx.createBiquadFilter();
+    filter.type = "bandpass";
+    filter.frequency.value = tickAlternate ? 2100 : 3200;
+    filter.Q.value = 2.5;
+    const gain = ctx.createGain();
+    noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.22, now + 0.001);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.025);
+    noise.start(now); noise.stop(now + 0.03);
+    tickAlternate = !tickAlternate;
+  } catch (e) { /* audio not available — silent is fine */ }
+}
+
+// Auto-cycles work -> break -> work, chiming on each transition, until sessionGoal work
+// sessions have been completed (each one finishing its break first) — then it auto-pauses
+// instead of starting another work session. Exact equality (not >=) on the goal check means
+// pressing Start again past that point runs free until the count is explicitly Reset, rather
+// than re-triggering the stop after every single extra session.
+function timerTick(){
+  timerState.remaining--;
+  if (timerState.remaining <= 0){
+    if (timerState.phase === "work") timerState.sessionsCompleted++;
+    const nextPhase = timerState.phase === "work" ? "break" : "work";
+    if (nextPhase === "work" && timerState.sessionsCompleted === timerState.sessionGoal){
+      timerState.goalReached = true;
+      pauseTimer();
+      timerState.phase = "work";
+      timerState.remaining = timerState.workMin * 60;
+    } else {
+      timerState.phase = nextPhase;
+      timerState.remaining = (nextPhase === "work" ? timerState.workMin : timerState.breakMin) * 60;
+    }
+    playTimerChime();
+  } else if (tickSoundEnabled && timerState.phase === "work"){
+    playTickSound();
+  }
+  renderTimer();
+}
+
+function startTimer(){
+  if (timerState.running) return;
+  timerState.running = true;
+  timerState.goalReached = false; // pressing Start again past the goal means "keep going"
+  timerInterval = setInterval(timerTick, 1000);
+  renderTimer();
+}
+
+function pauseTimer(){
+  timerState.running = false;
+  clearInterval(timerInterval);
+  timerInterval = null;
+  renderTimer();
+}
+
+function toggleTimer(){ timerState.running ? pauseTimer() : startTimer(); }
+
+function resetTimer(){
+  pauseTimer();
+  timerState.phase = "work";
+  timerState.remaining = timerState.workMin * 60;
+  timerState.sessionsCompleted = 0;
+  timerState.goalReached = false;
+  renderTimer();
+}
+
+// Duration changes only affect `remaining` when the adjusted phase isn't the one actively
+// counting down — avoids the current countdown jumping around mid-session; the new duration
+// still applies the next time that phase starts.
+async function adjustWorkMin(delta){
+  timerState.workMin = Math.min(TIMER_MAX_MINUTES, Math.max(TIMER_MIN_MINUTES, timerState.workMin + delta));
+  if (!timerState.running && timerState.phase === "work") timerState.remaining = timerState.workMin * 60;
+  renderTimer();
+  await saveMeta("timerWorkMin", timerState.workMin);
+}
+
+async function adjustBreakMin(delta){
+  timerState.breakMin = Math.min(TIMER_MAX_MINUTES, Math.max(TIMER_MIN_MINUTES, timerState.breakMin + delta));
+  if (!timerState.running && timerState.phase === "break") timerState.remaining = timerState.breakMin * 60;
+  renderTimer();
+  await saveMeta("timerBreakMin", timerState.breakMin);
+}
+
+async function adjustSessionGoal(delta){
+  timerState.sessionGoal = Math.min(TIMER_MAX_SESSIONS, Math.max(TIMER_MIN_SESSIONS, timerState.sessionGoal + delta));
+  renderTimer();
+  await saveMeta("timerSessionGoal", timerState.sessionGoal);
+}
+
+async function initTimer(){
+  let workMin = null, breakMin = null, sessionGoal = null;
+  try { workMin = await loadMeta("timerWorkMin"); } catch(e){}
+  try { breakMin = await loadMeta("timerBreakMin"); } catch(e){}
+  try { sessionGoal = await loadMeta("timerSessionGoal"); } catch(e){}
+  if (typeof workMin === "number" && workMin >= TIMER_MIN_MINUTES && workMin <= TIMER_MAX_MINUTES) timerState.workMin = workMin;
+  if (typeof breakMin === "number" && breakMin >= TIMER_MIN_MINUTES && breakMin <= TIMER_MAX_MINUTES) timerState.breakMin = breakMin;
+  if (typeof sessionGoal === "number" && sessionGoal >= TIMER_MIN_SESSIONS && sessionGoal <= TIMER_MAX_SESSIONS) timerState.sessionGoal = sessionGoal;
+  timerState.remaining = timerState.workMin * 60;
+  renderTimer();
+}
+
+// Its own independent popup (not nested in Settings) — closes the Settings popup when opened
+// and vice versa (see the settingsBtn/timerBtn click handlers below) so the two never overlap
+// in the header's limited width.
+function openTimerPanel(){
+  $("timerPanel").classList.remove("hidden");
+  $("timerBtn").setAttribute("aria-expanded", "true");
+}
+function closeTimerPanel(){
+  $("timerPanel").classList.add("hidden");
+  $("timerBtn").setAttribute("aria-expanded", "false");
+}
+
+// ================= read notes aloud (Web Speech API) =================
+// Foundation ("Notes") decks only — Q&A content is short flashcard prose where "read the
+// current selection aloud" doesn't map onto anything as cleanly as it does for a chapter of
+// prose, so the control (in Settings) only appears while viewing a foundation deck. Uses the
+// browser's built-in speech synthesis — no external service, so this keeps working fully
+// offline like the rest of the app, same as the timer's chime.
+function getReadableChapters(){
+  const subj = currentSubject();
+  if (!subj || subj.type !== "foundation") return [];
+  const chaps = state.chapterFilter === -1 ? subj.chapters : [subj.chapters[state.chapterFilter]];
+  // Reuses the existing markdown renderer + a detached element's textContent to strip markdown/
+  // HTML down to plain readable text, rather than writing a second, parallel stripping regex.
+  const scratch = document.createElement("div");
+  return chaps.map(c => {
+    let html = renderMarkdown(c.content);
+    // A callout's icon glyph (e.g. "✎") shouldn't be read aloud literally, and adjacent block
+    // elements with no whitespace between them in the markup (e.g. a callout's title div
+    // butting directly against its content div) would otherwise have their text run together
+    // with no separating space once flattened to textContent.
+    html = html.replace(/<span class="callout-icon">[^<]*<\/span>/g, "").replace(/></g, "> <");
+    scratch.innerHTML = html;
+    return { title: c.title, text: scratch.textContent.replace(/\s+/g, " ").trim() };
+  });
+}
+
+// A browser's built-in speech-synthesis voices vary a lot in quality (Edge's own "Read aloud"
+// feature uses Microsoft's higher-quality neural voices, but those are exclusive to Edge's own
+// browser chrome — not exposed to any web page through the standard Web Speech API, in Edge or
+// otherwise, so this app has no way to reach them). A voice picker at least lets you choose the
+// best-sounding option among whatever voices the current browser actually exposes.
+let availableVoices = [];
+let selectedVoiceName = null;
+
+function populateVoiceSelect(){
+  // US and UK English only. UK English's actual BCP-47 tag is "en-GB" (Great Britain) — voice
+  // engines always report it that way regardless of how it's labeled in the display name — so
+  // that's matched here alongside "en-US".
+  availableVoices = speechSynthesis.getVoices().filter(v => /^en[-_](us|gb)$/i.test(v.lang));
+  const select = $("voiceSelect");
+  const want = selectedVoiceName;
+  select.innerHTML = availableVoices.map(v => `<option value="${escapeHtml(v.name)}">${escapeHtml(v.name)} (${escapeHtml(v.lang)})</option>`).join("");
+  if (want && availableVoices.some(v => v.name === want)) select.value = want;
+  else if (availableVoices.length) selectedVoiceName = select.value = availableVoices[0].name;
+}
+
+// speechSynthesis rate is fixed per-utterance at creation and can't be changed on one already
+// playing, so a mid-read speed change re-queues from whichever chapter is currently speaking
+// (readingChapterIdx, updated per-utterance in startReading()) rather than restarting from
+// scratch or waiting for the next Play press.
+const READ_RATE_MIN = 0.5, READ_RATE_MAX = 2, READ_RATE_STEP = 0.25;
+let speechRate = 1;
+let readingChapterIdx = 0;
+
+function applySpeechRate(rate){
+  speechRate = Math.round(Math.min(READ_RATE_MAX, Math.max(READ_RATE_MIN, rate)) * 100) / 100;
+  $("speedVal").textContent = speechRate.toFixed(2).replace(/0+$/,"").replace(/\.$/,"") + "x";
+  $("speedDec").disabled = speechRate <= READ_RATE_MIN;
+  $("speedInc").disabled = speechRate >= READ_RATE_MAX;
+}
+
+async function initSpeechRate(){
+  let saved = null;
+  try { saved = await loadMeta("readAloudRate"); } catch(e){}
+  applySpeechRate(typeof saved === "number" ? saved : 1);
+}
+
+async function stepSpeechRate(delta){
+  applySpeechRate(speechRate + delta);
+  await saveMeta("readAloudRate", speechRate);
+  if (speechSynthesis.speaking) startReading(readingChapterIdx); // re-queue what's left at the new rate
+}
+
+async function initReadAloud(){
+  let saved = null;
+  try { saved = await loadMeta("readAloudVoice"); } catch(e){}
+  if (typeof saved === "string") selectedVoiceName = saved;
+  await initSpeechRate();
+  if (typeof speechSynthesis === "undefined") return;
+  populateVoiceSelect();
+  // Chrome loads the voice list asynchronously — it's often empty on the very first call, and
+  // fills in (or changes) once this fires.
+  speechSynthesis.onvoiceschanged = populateVoiceSelect;
+}
+
+function renderReadAloud(){
+  const subj = currentSubject();
+  const applicable = !!(subj && subj.type === "foundation");
+  $("readAloudSection").classList.toggle("hidden", !applicable);
+  $("readAloudDivider").classList.toggle("hidden", !applicable);
+  if (!applicable) return;
+  const speaking = speechSynthesis.speaking && !speechSynthesis.paused;
+  $("readAloudToggleBtn").textContent = speaking ? "‖ Pause" : (speechSynthesis.paused ? "▶ Resume" : "▶ Play");
+  $("readAloudStopBtn").disabled = !speechSynthesis.speaking;
+}
+
+function stopReading(){
+  speechSynthesis.cancel();
+  renderReadAloud();
+}
+
+// A whole chapter as one utterance silently fails to speak at all on Android — Chrome for
+// Android's Web Speech implementation delegates to the native Android TextToSpeech engine,
+// which enforces a hard per-utterance character cap (historically ~4000, sometimes lower
+// depending on the OEM TTS engine); there's also a long-standing Chrome bug where an utterance
+// running past ~15s of actual speech can just stop. Splitting into short, sentence-sized pieces
+// sidesteps both — chosen conservatively short (not just "under 4000") so a chunk still stays
+// well under the ~15s cliff even at the slowest supported rate (0.5x, where speech takes twice
+// as long per character as normal).
+const SPEECH_CHUNK_MAX = 100;
+function splitIntoSpeechChunks(text){
+  const sentences = text.match(/[^.!?]+[.!?]+(\s+|$)|[^.!?]+$/g) || [text];
+  const chunks = [];
+  let cur = "";
+  for (const sentence of sentences){
+    if (cur && cur.length + sentence.length > SPEECH_CHUNK_MAX){
+      chunks.push(cur.trim());
+      cur = "";
+    }
+    if (sentence.length > SPEECH_CHUNK_MAX){
+      if (cur){ chunks.push(cur.trim()); cur = ""; }
+      let rest = sentence;
+      while (rest.length > SPEECH_CHUNK_MAX){
+        let cut = rest.lastIndexOf(" ", SPEECH_CHUNK_MAX);
+        if (cut <= 0) cut = SPEECH_CHUNK_MAX;
+        chunks.push(rest.slice(0, cut).trim());
+        rest = rest.slice(cut).trim();
+      }
+      cur = rest;
+    } else {
+      cur += sentence;
+    }
+  }
+  if (cur.trim()) chunks.push(cur.trim());
+  return chunks.filter(Boolean);
+}
+
+// Queues short utterances per chapter from fromIdx onward (title first, then body split into
+// chunks — see splitIntoSpeechChunks()) — speechSynthesis plays consecutive speak() calls back
+// to back on its own, so no manual chaining is needed. fromIdx lets a mid-read speed change
+// (see stepSpeechRate()) pick back up wherever it left off instead of restarting the whole
+// chapter list.
+function startReading(fromIdx = 0){
+  speechSynthesis.cancel();
+  readingChapterIdx = fromIdx;
+  const voice = availableVoices.find(v => v.name === selectedVoiceName);
+  getReadableChapters().forEach((c,i) => {
+    if (i < fromIdx || !c.text) return;
+    const pieces = [`${c.title}.`, ...splitIntoSpeechChunks(c.text)];
+    pieces.forEach(piece => {
+      const utter = new SpeechSynthesisUtterance(piece);
+      if (voice) utter.voice = voice;
+      utter.rate = speechRate;
+      utter.onstart = () => { readingChapterIdx = i; renderReadAloud(); };
+      utter.onend = renderReadAloud;
+      utter.onerror = renderReadAloud;
+      speechSynthesis.speak(utter);
+    });
+  });
+  renderReadAloud();
+}
+
+function toggleReadAloud(){
+  if (speechSynthesis.speaking && !speechSynthesis.paused) speechSynthesis.pause();
+  else if (speechSynthesis.paused) speechSynthesis.resume();
+  else startReading();
+  renderReadAloud();
+}
+
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+// Wraps rendered <table> blocks in a dedicated horizontal-scroll container so wide
+// tables don't force the whole card/answer text to overflow.
+function wrapTables(html){
+  return html.replace(/<table\b[^>]*>/g, m => '<div class="table-scroll">' + m).replace(/<\/table>/g, '</table></div>');
+}
+
+// Turns a "Design Note" / "Did You Know" / "Engineering Insight" / "Common Misconceptions"
+// callout blockquote into an Obsidian-style callout box (accent border, tinted background,
+// icon + title row) instead of a plain quote. Recognizes two source formats for the same known
+// labels:
+//   - native Obsidian callout syntax (the current foundation-note generation convention):
+//       > [!info] Design Note
+//       > body text...
+//     marked has no idea what "[!info]" means, so this renders as a plain blockquote whose
+//     first line literally reads "[!info] Design Note" — the type keyword ("info"/"faq"/etc.)
+//     is Obsidian's own icon/color selector and is intentionally ignored here; only the title
+//     text after it is used to pick which of our known callouts this is.
+//   - the older "> **Design Note:** body" bold-label style, kept working so already-generated
+//     files render correctly without needing to be regenerated.
+// Any other blockquote (neither pattern, or a label that isn't one of the known ones) is left
+// as a normal <blockquote>.
+const CALLOUT_TYPES = {
+  "design note": { cls: "note", icon: "✎", label: "Design Note" },
+  "did you know": { cls: "info", icon: "✦", label: "Did You Know?" },
+  "engineering insight": { cls: "insight", icon: "✳", label: "Engineering Insight" },
+  "common misconceptions": { cls: "warn", icon: "✕", label: "Common Misconceptions" }
+};
+function styleCallouts(html){
+  return html.replace(/<blockquote>\s*([\s\S]*?)\s*<\/blockquote>/g, (match, inner) => {
+    let label, body;
+    let m = inner.match(/^<p>\s*\[!\w+\]\s*([^\n<]*)\n([\s\S]*)$/);
+    if (m){ label = m[1]; body = m[2]; }
+    else {
+      m = inner.match(/^<p>\s*<strong>([^<]+?)<\/strong>\s*([\s\S]*)$/);
+      if (m){ label = m[1]; body = m[2]; }
+    }
+    if (label === undefined) return match;
+    const type = CALLOUT_TYPES[label.replace(/[:?]\s*$/, "").trim().toLowerCase()];
+    if (!type) return match;
+    return `<div class="callout callout-${type.cls}">`
+      + `<div class="callout-title"><span class="callout-icon">${type.icon}</span>${type.label}</div>`
+      + `<div class="callout-content"><p>${body}</div>`
+      + `</div>`;
+  });
+}
+
+function renderMarkdown(md){
+  const html = typeof marked !== "undefined" ? marked.parse(md) : escapeHtml(md);
+  return styleCallouts(wrapTables(html));
+}
+
+// Renders markdown and prefixes it with a "Q. "/"A. " label that stays on the same
+// line as the text. marked.parse() wraps plain text in a block-level <p>, so a CSS
+// ::before on the container would land on its own line above that <p> — instead we
+// inject the label inside the leading <p> (or before non-paragraph block content).
+function markdownWithLabel(md, label){
+  const html = renderMarkdown(md);
+  const span = `<span class="qa-lbl">${label}</span> `;
+  return /^<p>/.test(html) ? html.replace(/^<p>/, "<p>" + span) : span + html;
+}
+
+// Global configuration profiles for KaTeX formula compilation
+const KATEX_OPTIONS = {
+  delimiters: [
+    {left: '$$', right: '$$', display: true},
+    {left: '$', right: '$', display: false},
+    {left: '\\(', right: '\\)', display: false},
+    {left: '\\[', right: '\\]', display: true}
+  ],
+  throwOnError: false
+};
+
+// chapter title formatting helpers
+function chapNum(title){
+  const m = title.match(/^(?:Chapter|Section|Unit|Part|Ch)?\s*([A-Z]?\d+)\b/i);
+  return m ? m[1].toUpperCase() : "";
+}
+function chapName(title){
+  const stripped = title.replace(/^(?:Chapter|Section|Unit|Part|Ch)?\s*[A-Z]?\d+\s*[\u2014\u2013\-:.]\s*/i, "").trim();
+  return stripped || title;
+}
+
+// ================= folder import + image resolution =================
+// Obsidian's paste-screenshot workflow drops a "Pasted image ....png" into a shared
+// attachments/ folder and embeds it as ![[Pasted image ....png]] \u2014 not a path relative
+// to the note, and not inline base64. To resolve that we need every image in the
+// imported folder tree turned into a data URL up front, keyed both by its path (for
+// note-relative/vault-relative refs) and by its bare filename (for the common case of
+// a wikilink with no path at all).
+const IMAGE_RE = /\.(png|jpe?g|gif|webp|svg)$/i;
+const DOC_RE = /\.(docx|md|markdown|txt)$/i;
+const AMBIGUOUS = Symbol("ambiguous-image-name");
+
+function readAsDataUrl(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
+// Normalizes a FileList, a File[], or an already-tagged {file, relativePath}[] into the
+// {file, relativePath}[] shape the rest of the import pipeline expects. A flat multi-select
+// (or a drag-drop) has no meaningful folder structure, so its "relative path" is just the
+// bare filename.
+function normalizeFileEntries(input){
+  return Array.from(input).map(item =>
+    (item && item.file) ? item : { file: item, relativePath: item.webkitRelativePath || item.name });
+}
+
+// Recursively walks a FileSystemDirectoryHandle (File System Access API), skipping
+// dotfolders (.obsidian, .git, .trash, ...) since those are always tooling/config noise,
+// never vault content worth surfacing as "unsupported file" warnings. Each entry keeps a
+// reference to its own immediate parent directory handle (not just the walk root) so a
+// notes sidecar file can later be written as a sibling of the source file, wherever in the
+// tree it actually lives.
+async function collectFilesFromDirHandle(dirHandle, prefix){
+  const base = prefix || "";
+  const out = [];
+  for await (const [name, handle] of dirHandle.entries()){
+    if (name.startsWith(".")) continue;
+    const relPath = base ? `${base}/${name}` : name;
+    if (handle.kind === "directory"){
+      out.push(...await collectFilesFromDirHandle(handle, relPath));
+    } else {
+      out.push({ file: await handle.getFile(), relativePath: relPath, dirHandle });
+    }
+  }
+  return out;
+}
+
+function pickFolderViaInput(){
+  return new Promise(resolve => {
+    const input = $("folderInput");
+    const cleanup = () => {
+      input.removeEventListener("change", onChange);
+      input.removeEventListener("cancel", onCancel);
+    };
+    const onChange = () => {
+      cleanup();
+      const list = normalizeFileEntries(input.files);
+      input.value = "";
+      resolve(list);
+    };
+    const onCancel = () => { cleanup(); resolve([]); };
+    input.addEventListener("change", onChange);
+    input.addEventListener("cancel", onCancel); // supported in modern Chromium/Edge; older
+    input.click();                              // browsers just never resolve on cancel here
+  });
+}
+
+async function pickFolder(){
+  if ("showDirectoryPicker" in window){
+    const dirHandle = await window.showDirectoryPicker();
+    return await collectFilesFromDirHandle(dirHandle);
+  }
+  return await pickFolderViaInput();
+}
+
+async function handleFolderImport(logEl){
+  let entries;
+  try {
+    entries = await pickFolder();
+  } catch (e) {
+    if (e && e.name === "AbortError") return; // user dismissed the native picker
+    logEl.innerHTML = `<div class="err">\u2715 Could not read that folder \u2014 ${escapeHtml((e && e.message) || "unknown error")}</div>`;
+    return;
+  }
+  if (!entries || !entries.length) return;
+  await loadFiles(entries, logEl, { silentSkip: true });
+}
+
+// Builds a lookup keyed both by relative path and by bare filename. Same filename in two
+// different folders with different content is flagged AMBIGUOUS rather than guessed at \u2014
+// resolveImageRef surfaces that as a warning instead of silently picking the wrong image.
+async function buildImageMap(imageEntries){
+  const byPath = new Map();
+  const byName = new Map();
+  const byNamePaths = new Map();
+  for (const { file, relativePath } of imageEntries){
+    const dataUrl = await readAsDataUrl(file);
+    byPath.set(relativePath.toLowerCase(), dataUrl);
+
+    const base = file.name.toLowerCase();
+    if (!byNamePaths.has(base)) byNamePaths.set(base, new Set());
+    byNamePaths.get(base).add(relativePath);
+
+    if (byName.has(base)){
+      if (byName.get(base) !== dataUrl) byName.set(base, AMBIGUOUS);
+    } else {
+      byName.set(base, dataUrl);
+    }
+  }
+  return { byPath, byName, byNamePaths };
+}
+
+// Joins a reference path against the referencing file's own folder, resolving ".." segments.
+function resolveRelativePath(baseDir, ref){
+  const stack = baseDir ? baseDir.split("/") : [];
+  for (const part of ref.split("/")){
+    if (part === "" || part === ".") continue;
+    if (part === "..") stack.pop();
+    else stack.push(part);
+  }
+  return stack.join("/");
+}
+
+// Resolution order: note-relative path, then vault-root-relative path, then bare filename.
+// `unresolvedLog`, if given, collects human-readable notes about anything that couldn't be
+// resolved (or was ambiguous) so the import summary can surface it instead of failing quietly.
+function resolveImageRef(ref, imageMap, referencingRelPath, unresolvedLog){
+  if (!ref) return ref;
+  if (/^(?:data:|https?:)/i.test(ref)) return ref; // already renderable as-is
+
+  const norm = decodeURIComponent(ref.replace(/^\.\//, "")).trim();
+  const dir = referencingRelPath && referencingRelPath.includes("/")
+    ? referencingRelPath.slice(0, referencingRelPath.lastIndexOf("/")) : "";
+
+  if (dir){
+    const joined = resolveRelativePath(dir, norm).toLowerCase();
+    if (imageMap.byPath.has(joined)) return imageMap.byPath.get(joined);
+  }
+  if (imageMap.byPath.has(norm.toLowerCase())) return imageMap.byPath.get(norm.toLowerCase());
+
+  const base = norm.slice(norm.lastIndexOf("/") + 1).toLowerCase();
+  const hit = imageMap.byName.get(base);
+  if (hit === AMBIGUOUS){
+    const paths = [...(imageMap.byNamePaths.get(base) || [])];
+    if (unresolvedLog) unresolvedLog.push(`"${ref}" is ambiguous (found in: ${paths.join(", ")})`);
+    return ref;
+  }
+  if (hit) return hit;
+
+  if (unresolvedLog) unresolvedLog.push(`"${ref}" not found`);
+  return ref;
+}
+
+// ================= card notes (sidecar file) =================
+// Notes never touch the source .md file — they live in a sibling "<deckname>.notes.md",
+// written via the same directory handle folder import already grants (Tier 1). Manual/
+// webkitdirectory imports have no writable handle at all (Tier 2): notes there live only
+// in IndexedDB, with a manual "export notes file" action as the way to get them onto disk.
+//
+// Notes are matched to a card by its (normalized) question text rather than by id, because
+// re-parsing a file on every import assigns fresh ids — text is the one thing that's actually
+// stable across re-imports of the same source, and if a question changes enough that the text
+// no longer matches, silently keeping the old note attached would be more wrong than dropping it.
+function noteKey(q){
+  return (q || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+function sidecarNameFor(sourceFileName){
+  return sourceFileName.replace(/\.(docx|md|markdown|txt)$/i, "") + ".notes.md";
+}
+
+// A card counts as having spaced-repetition progress worth persisting once it's been reviewed
+// at least once — a never-touched card has reps:0, interval:0, due:0 (all falsy), which is the
+// prepareSubjects() default and not worth writing out.
+function hasReviewProgress(it){
+  return !!(it.srsReps || it.srsInterval || it.srsDue);
+}
+
+// Sidecar format: one "## <question text>" heading per note, body until the next heading —
+// deliberately not a callout/native Obsidian syntax, since this file is entirely app-owned
+// and regenerated wholesale on every save rather than spliced, so it doesn't need to look
+// like hand-authored vault content.
+// A "★ " prefix on the heading marks that card as starred, independent of whether it also
+// has note text — this is how starred state round-trips through the sidecar file too, not
+// just IndexedDB, so it survives on any machine that has the vault folder, not just this browser.
+// A "<!-- srs ... -->" line right after the heading (optional) carries spaced-repetition
+// progress the same way — due as an ISO timestamp (readable, unambiguous), interval/ease/reps
+// as plain numbers. Malformed/hand-edited srs lines are simply ignored (parseSrsLine returns
+// null), not treated as an error — worst case a card's schedule just doesn't round-trip.
+function parseSrsLine(line){
+  if (!line) return null;
+  const m = line.match(/^<!--\s*srs\s+(.*?)\s*-->\s*$/);
+  if (!m) return null;
+  const attrs = {};
+  m[1].replace(/(\w+)=(\S+)/g, (_, k, v) => { attrs[k] = v; return _; });
+  const due = Date.parse(attrs.due);
+  const interval = parseFloat(attrs.interval);
+  const ease = parseFloat(attrs.ease);
+  const reps = parseInt(attrs.reps, 10);
+  if (isNaN(due) || isNaN(interval) || isNaN(ease) || isNaN(reps)) return null;
+  return { due, interval, ease, reps };
+}
+
+function parseSidecarNotes(text){
+  const map = new Map();
+  const parts = text.split(/\r?\n(?=## )/);
+  for (const part of parts){
+    const m = part.match(/^## (.*)\n?([\s\S]*)$/);
+    if (!m) continue;
+    let heading = m[1];
+    let starred = false;
+    if (/^★\s*/.test(heading)){ starred = true; heading = heading.replace(/^★\s*/, ""); }
+    const key = noteKey(heading);
+    let rest = m[2];
+    const firstLineEnd = rest.indexOf("\n");
+    const firstLine = firstLineEnd === -1 ? rest : rest.slice(0, firstLineEnd);
+    const srs = parseSrsLine(firstLine.trim());
+    if (srs) rest = firstLineEnd === -1 ? "" : rest.slice(firstLineEnd + 1);
+    const body = rest.trim();
+    if (key) map.set(key, { note: body, starred, srs });
+  }
+  return map;
+}
+
+async function readSidecarNotes(dirHandle, sidecarName){
+  if (!dirHandle) return null;
+  try {
+    const handle = await dirHandle.getFileHandle(sidecarName, { create: false });
+    const file = await handle.getFile();
+    return parseSidecarNotes(await file.text());
+  } catch (e) {
+    return null; // no sidecar yet — normal for a deck that's never had a note saved
+  }
+}
+
+function buildSidecarText(subjectName, allItems){
+  const relevant = allItems.filter(it => (it.note && it.note.trim()) || it.starred || hasReviewProgress(it));
+  const header = `<!-- Notes for "${subjectName}", managed by Review Deck. Safe to edit by hand —\n` +
+    `     each entry is matched back to its card by the question text in the heading.\n` +
+    `     A "★ " prefix on the heading marks that card as starred.\n` +
+    `     A "<!-- srs ... -->" line stores spaced-repetition review progress (due date,\n` +
+    `     interval, ease, reps) so it carries over to another machine — safe to leave alone,\n` +
+    `     or delete just that line to reset the card's schedule. -->\n\n`;
+  return header + relevant.map(it => {
+    const star = it.starred ? "★ " : "";
+    const q = it.q.replace(/<[^>]*>/g, "").trim();
+    const body = (it.note || "").trim();
+    const srsLine = hasReviewProgress(it)
+      ? `\n<!-- srs due=${new Date(it.srsDue).toISOString()} interval=${it.srsInterval} ease=${it.srsEase.toFixed(2)} reps=${it.srsReps} -->`
+      : "";
+    return `## ${star}${q}${srsLine}` + (body ? `\n\n${body}` : "");
+  }).join("\n\n");
+}
+
+// Regenerates the whole sidecar from current note+star+review-progress data (never spliced —
+// this file is 100% app-owned) and writes it, or removes it entirely once none of that applies
+// to any card, so a deck that's never used any of these features doesn't leave a stray file.
+async function writeSidecarNotes(subj){
+  if (!subj.noteDirHandle || !subj.sidecarName) return { ok: false, reason: "no-handle" };
+  const allItems = subj.chapters.flatMap(c => c.items);
+  const hasNotes = allItems.some(it => (it.note && it.note.trim()) || it.starred || hasReviewProgress(it));
+  try {
+    if (!hasNotes){
+      try { await subj.noteDirHandle.removeEntry(subj.sidecarName); } catch (e) { /* already absent */ }
+      return { ok: true };
+    }
+    const perm = await ensureWritePermission(subj.noteDirHandle);
+    if (!perm) return { ok: false, reason: "permission-denied" };
+    const fileHandle = await subj.noteDirHandle.getFileHandle(subj.sidecarName, { create: true });
+    const writable = await fileHandle.createWritable();
+    await writable.write(buildSidecarText(subj.name, allItems));
+    await writable.close();
+    return { ok: true };
+  } catch (e) {
+    console.error("Failed to write notes sidecar:", e);
+    return { ok: false, reason: "write-error" };
+  }
+}
+
+async function ensureWritePermission(dirHandle){
+  const opts = { mode: "readwrite" };
+  if ((await dirHandle.queryPermission(opts)) === "granted") return true;
+  return (await dirHandle.requestPermission(opts)) === "granted";
+}
+
+// A directory handle restored from IndexedDB (e.g. after a reload) needs its permission
+// re-verified before it can be read again — Chromium requires this to happen from a real
+// user gesture, which is exactly what clicking "Recheck" provides.
+async function ensureReadPermission(dirHandle){
+  const opts = { mode: "read" };
+  if ((await dirHandle.queryPermission(opts)) === "granted") return true;
+  return (await dirHandle.requestPermission(opts)) === "granted";
+}
+
+// Carries starred/note/review-progress state forward from a previously-loaded copy of this
+// deck into a freshly re-parsed one, matched by question text. Without this, re-importing a
+// folder (the app's normal "pick up edits" flow) would silently wipe every star, note, and
+// spaced-repetition schedule on each import.
+function mergeOldItemState(newChapters, oldChapters){
+  if (!oldChapters) return;
+  const oldByKey = new Map();
+  oldChapters.forEach(c => c.items.forEach(it => oldByKey.set(noteKey(it.q), it)));
+  newChapters.forEach(c => c.items.forEach(it => {
+    const old = oldByKey.get(noteKey(it.q));
+    if (old){
+      it.id = old.id;
+      it.starred = old.starred;
+      it.note = old.note || "";
+      it.srsDue = old.srsDue || 0;
+      it.srsInterval = old.srsInterval || 0;
+      it.srsEase = old.srsEase || 2.5;
+      it.srsReps = old.srsReps || 0;
+    }
+  }));
+}
+
+// Cleans up decks that ended up duplicated by an older, buggier cleanDeckName() — e.g. a legacy
+// untagged import sitting alongside a later ".qa.md"-tagged re-import of the same content, which
+// used to be distinguishable only because their computed names differed (one had a stray
+// trailing "qa"). Now that names are computed consistently, any pair that collides on name
+// (within the same foundation/Q&A bucket) gets folded into one: preferring the canonically-named
+// copy as the survivor, and carrying stars/notes forward from the dropped one via the same
+// question-text matching a normal re-import already uses (mergeOldItemState).
+function mergeDuplicateSubjects(subjects){
+  const seen = new Map();
+  const result = [];
+  let changed = false;
+  subjects.forEach(subj => {
+    const bucket = subj.type === "foundation" ? "foundation" : "qa";
+    const key = bucket + "::" + subj.name;
+    const prior = seen.get(key);
+    if (!prior){ seen.set(key, subj); result.push(subj); return; }
+    changed = true;
+    if (bucket === "foundation") return; // no per-card state to preserve — keep the first, drop subj
+    const keepSubj = isQaFile(subj) && !isQaFile(prior);
+    const survivor = keepSubj ? subj : prior;
+    const dropped = keepSubj ? prior : subj;
+    mergeOldItemState(survivor.chapters, dropped.chapters);
+    if (keepSubj){
+      result[result.indexOf(prior)] = subj;
+      seen.set(key, subj);
+    }
+  });
+  if (changed){ subjects.length = 0; subjects.push(...result); }
+  return changed;
+}
+
+// ================= parsing structures =================
+const Q_RE = /^Q\s*(?:\d+)?\s*[\.\:\)\-\u2014]\s*/i;
+const A_RE = /^A\s*(?:ns(?:wer)?)?\s*[\.\:\)\-\u2014]\s*/i;
+// Matches a true Markdown thematic break (---, ***, ___, with optional spacing) and nothing else.
+// Deliberately excludes "|" so GFM table delimiter rows (e.g. |---|---|) are never mistaken for one.
+const THEMATIC_BREAK_RE = /^ {0,3}([-*_])[ \t]*(?:\1[ \t]*){2,}$/;
+
+function cleanDeckName(filename){
+  // ".foundation"/".qa" are content-type markers (see FOUNDATION_RE/QA_RE below) — stripped here
+  // purely for a clean display name. Separators get normalized to spaces *before* stripping the
+  // marker word, so this catches it whether the source file used a dot, underscore, or hyphen
+  // right before the marker (e.g. "name.qa.md" and "name_qa.md" both end up as just "name").
+  const noExt = filename.replace(/\.(docx|md|markdown|txt)$/i, "");
+  const spaced = noExt.replace(/[_\-.]+/g, " ").replace(/\s+/g, " ").trim();
+  return spaced.replace(/\s+(foundation|qa)$/i, "") || filename;
+}
+
+// Foundation files are reference/textbook-style chapters (prose, headings, tables, figures)
+// rather than Q./A. flashcard pairs, and are always named "<name>.foundation.md" by convention.
+const FOUNDATION_RE = /\.foundation\.(md|markdown|txt)$/i;
+
+// Canonical Q&A naming convention (parallel to FOUNDATION_RE). Does NOT gate parsing/loading or
+// dropdown visibility (matchesTypeFilter treats any non-foundation deck as "qa" — a strict
+// filename check here proved too fragile, silently hiding decks over naming typos). Only used
+// by mergeDuplicateSubjects() as a tie-breaker: when two decks turn out to be true duplicates,
+// the one matching this convention is kept as the canonical copy. .docx has no room for a
+// ".qa" suffix (it's a binary format), so any loaded .docx deck counts as canonical unconditionally.
+const QA_RE = /\.qa\.(md|markdown|txt)$/i;
+function isQaFile(subj){
+  const fn = (subj && subj.sourceFileName) || "";
+  return /\.docx$/i.test(fn) || QA_RE.test(fn);
+}
+
+function makeCardId(){
+  return (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+}
+
+// Decks created before card tools were added do not have IDs or a starred flag.
+// Add them once on load so stars survive deck rebuilds and refreshes.
+function prepareSubjects(subjects){
+  let changed = false;
+  subjects.forEach(subj => {
+    // Retroactively fixes a stale display name left over from an older, buggier cleanDeckName()
+    // (e.g. one that didn't yet know to strip a "qa"/"foundation" marker separated by an
+    // underscore instead of a dot) — recomputed from the original filename on every startup, so
+    // any future cleanDeckName fix self-heals already-imported decks too, not just new imports.
+    if (subj.sourceFileName){
+      const freshName = cleanDeckName(subj.sourceFileName);
+      if (freshName !== subj.name){ subj.name = freshName; changed = true; }
+    }
+    if (subj.type === "foundation") return; // foundation chapters hold raw content, not q/a items
+    subj.chapters.forEach(chapter => chapter.items.forEach(item => {
+      if (!item.id){ item.id = makeCardId(); changed = true; }
+      if (typeof item.starred !== "boolean"){ item.starred = false; changed = true; }
+      if (typeof item.note !== "string"){ item.note = ""; changed = true; }
+      // Spaced-repetition schedule (SM-2-lite) — srsDue defaults to 0 ("due now"), so a card
+      // that's never been reviewed is always due immediately, and older decks saved before this
+      // feature existed self-heal into "everything's due" rather than "nothing's due".
+      if (typeof item.srsDue !== "number"){ item.srsDue = 0; changed = true; }
+      if (typeof item.srsInterval !== "number"){ item.srsInterval = 0; changed = true; }
+      if (typeof item.srsEase !== "number"){ item.srsEase = 2.5; changed = true; }
+      if (typeof item.srsReps !== "number"){ item.srsReps = 0; changed = true; }
+    }));
+  });
+  if (mergeDuplicateSubjects(subjects)) changed = true;
+  return changed;
+}
+
+function finishChapters(chapters){
+  return chapters.filter(c => c.items.length)
+                 .map(c => ({...c, items: c.items.filter(i => i.a)}))
+                 .filter(c => c.items.length);
+}
+
+// --- .docx parsing preserving figures ---
+// Strips a leading "Q." / "A." label from a paragraph regardless of whether
+// mammoth wrapped that label in its own formatting tag (bold, colored span,
+// etc.) — matching on el.textContent and walking actual text nodes means a
+// differently-formatted label (e.g. this app's accent-colored Q./A. labels)
+// still gets removed instead of silently surviving into the stored Q/A text.
+function stripLeadingLabel(el, re){
+  const m = el.textContent.match(re);
+  if (!m) return el.innerHTML.trim();
+  let remaining = m[0].length;
+  const clone = el.cloneNode(true);
+  const walker = document.createTreeWalker(clone, NodeFilter.SHOW_TEXT);
+  let node;
+  while (remaining > 0 && (node = walker.nextNode())){
+    const len = node.nodeValue.length;
+    if (len <= remaining){ node.nodeValue = ""; remaining -= len; }
+    else { node.nodeValue = node.nodeValue.slice(remaining); remaining = 0; }
+  }
+  while (clone.firstChild && clone.firstChild.nodeType === 1 &&
+         !clone.firstChild.textContent && !clone.firstChild.querySelector("img")){
+    clone.removeChild(clone.firstChild);
+  }
+  return clone.innerHTML.trim();
+}
+
+function parseHtmlToChapters(html){
+  const doc = new DOMParser().parseFromString(html,"text/html");
+  const chapters = [];
+  let cur = null, lastQA = null, answering = false;
+  const pushChapter = title => { cur = { title: title.trim(), items: [] }; chapters.push(cur); lastQA = null; answering = false; };
+  
+  for (const el of doc.body.children){
+    const tag = el.tagName;
+    if (/^H[1-3]$/.test(tag)){ const t = el.textContent.trim(); if (t) pushChapter(t); continue; }
+    if (tag === "TABLE"){
+      if (answering && lastQA) lastQA.a += "\n\n" + el.outerHTML;
+      continue;
+    }
+    if (tag !== "P" && tag !== "LI"){ continue; }
+    
+    const txt = el.textContent.replace(/\s+/g," ").trim();
+    if (!txt && !el.querySelector('img')) continue;
+    
+    let htmlContent = el.innerHTML.trim();
+    
+    if (Q_RE.test(txt)){
+      if (!cur) pushChapter("General");
+      htmlContent = stripLeadingLabel(el, Q_RE);
+      
+      lastQA = { q: htmlContent, a: "" };
+      cur.items.push(lastQA); answering = false;
+    } else if (A_RE.test(txt) && lastQA){
+      htmlContent = stripLeadingLabel(el, A_RE);
+      
+      lastQA.a = htmlContent; answering = true;
+    } else if (answering && lastQA){
+      lastQA.a += "\n\n" + htmlContent;
+    }
+  }
+  return finishChapters(chapters);
+}
+
+// Resolves both Obsidian wikilink embeds and standard Markdown images against imageMap.
+// Shared by both the Q/A parser and the foundation-document parser. imageMap/relativePath/
+// unresolvedLog are optional — callers that don't care about image resolution (or have no
+// images available) can omit them and refs pass through unresolved.
+function resolveImagesInText(text, imageMap, relativePath, unresolvedLog){
+  const images = imageMap || { byPath: new Map(), byName: new Map(), byNamePaths: new Map() };
+
+  // Obsidian embed: ![[filename.png]] or ![[filename.png|caption]]. Only "![[...]]" (with the
+  // leading "!") is an embed — bare "[[note link]]" is Obsidian's internal note-link syntax,
+  // not an image, and is deliberately left untouched (renders as literal text).
+  text = text.replace(/!\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (m, ref, caption) => {
+    const cleanRef = ref.trim();
+    const alt = (caption || cleanRef.replace(/\.[a-z0-9]+$/i, "")).trim();
+    const resolved = resolveImageRef(cleanRef, images, relativePath, unresolvedLog);
+    return `<img src="${escapeHtml(resolved)}" alt="${escapeHtml(alt)}">`;
+  });
+
+  // Standard Markdown image: ![alt](path)
+  text = text.replace(/!\[(.*?)\]\((.*?)\)/g, (m, alt, src) => {
+    const resolved = resolveImageRef(src.trim(), images, relativePath, unresolvedLog);
+    return `<img src="${escapeHtml(resolved)}" alt="${escapeHtml(alt)}">`;
+  });
+
+  return text;
+}
+
+// --- foundation documents (reference/textbook chapters, not Q./A. flashcards) ---
+// Only top-level "# Heading" lines start a new chapter; everything else (## / ### sections,
+// paragraphs, lists, tables, equations, blockquotes, images) is kept as that chapter's raw
+// markdown body and rendered as-is — marked.parse() already handles nested headings fine.
+function parseFoundationToChapters(text, imageMap, relativePath, unresolvedLog){
+  text = resolveImagesInText(text, imageMap, relativePath, unresolvedLog);
+  const chapters = [];
+  let cur = null;
+  for (const raw of text.split(/\r?\n/)){
+    const h1 = raw.match(/^#\s+(.*)/);
+    if (h1){
+      // Strips bold/italic emphasis wrapping and a closed-ATX trailing "#" run (e.g.
+      // "# **Title** #") — deliberately NOT a blanket [#*_]+ strip, which used to mangle any
+      // underscore or asterisk appearing anywhere in the title (e.g. a variable name like
+      // "a_max" losing its underscore) rather than just markdown emphasis markers.
+      cur = { title: h1[1].replace(/\*\*/g,"").replace(/(^|\s)\*(\S)/g,"$1$2").replace(/(\S)\*(\s|$)/g,"$1$2").replace(/\s*#+\s*$/,"").trim(), content: "" };
+      chapters.push(cur);
+      continue;
+    }
+    if (!cur) continue; // content before the first "# " heading has no chapter to belong to
+    cur.content += raw + "\n";
+  }
+  return chapters
+    .map(c => ({ ...c, content: c.content.trim() }))
+    .filter(c => c.title && c.content);
+}
+
+// --- .md / .txt parsing preserving figures ---
+// imageMap/relativePath/unresolvedLog are optional — callers that don't care about image
+// resolution (or have no images available) can omit them and refs pass through unresolved,
+// same as before this app supported folder import.
+function parseTextToChapters(text, imageMap, relativePath, unresolvedLog){
+  const chapters = [];
+  let cur = null, lastQA = null, answering = false;
+  const pushChapter = title => { cur = { title, items: [] }; chapters.push(cur); lastQA = null; answering = false; };
+  text = resolveImagesInText(text, imageMap, relativePath, unresolvedLog);
+
+  const clean = s => s.replace(/\*\*/g,"").replace(/(^|\s)\*(\S)/g,"$1$2").replace(/(\S)\*(\s|$)/g,"$1$2").trim();
+  
+  for (const raw of text.split(/\r?\n/)){
+    const line = raw.trim();
+    if (!line){
+      // Preserve the paragraph/table-ending blank line so marked.parse() sees the
+      // same block boundaries the source file had, instead of gluing everything
+      // that follows onto one run-on block.
+      if (answering && lastQA) lastQA.a += "\n";
+      continue;
+    }
+    if (/^#{1,3}\s/.test(line)){
+      const t = clean(line.replace(/^#+\s*/,""));
+      if (t) pushChapter(t);
+      continue;
+    }
+    if (/^#{4,}/.test(line)) continue;
+    
+    if (Q_RE.test(line)){
+      if (!cur) pushChapter("General");
+      let qText = line.replace(Q_RE,"");
+      lastQA = { q: qText, a: "" };
+      cur.items.push(lastQA); answering = false;
+    } else if (A_RE.test(line) && lastQA){
+      let aText = line.replace(A_RE,"");
+      lastQA.a = aText; answering = true;
+    } else if (answering && lastQA && !THEMATIC_BREAK_RE.test(line)){
+      lastQA.a += "\n" + line;
+    } else {
+      answering = false;
+    }
+  }
+  return finishChapters(chapters);
+}
+
+// `opts.silentSkip` drops the per-file "unsupported file type" warning \u2014 folder imports pull
+// in a whole vault tree (.obsidian/, .canvas, .excalidraw, etc.) where that noise is expected
+// and not worth reporting; the manual picker is an explicit per-file choice, so it keeps warning.
+async function loadFiles(fileList, logEl, opts){
+  const silentSkip = !!(opts && opts.silentSkip);
+  const entries = normalizeFileEntries(fileList);
+  logEl.innerHTML = "";
+  let loadedAny = false;
+
+  const imageEntries = entries.filter(({file}) => IMAGE_RE.test(file.name));
+  const imageMap = await buildImageMap(imageEntries);
+
+  for (const { file, relativePath, dirHandle } of entries){
+    if (IMAGE_RE.test(file.name)) continue; // resolved via imageMap, summarized below \u2014 not logged per-file
+    const isDocx = /\.docx$/i.test(file.name);
+    const isText = /\.(md|markdown|txt)$/i.test(file.name);
+    if (!isDocx && !isText){
+      if (!silentSkip){
+        logEl.innerHTML += `<div class="err">\u2715 ${escapeHtml(file.name)} \u2014 use .docx, .md, or .txt</div>`;
+      }
+      continue;
+    }
+    const isFoundation = FOUNDATION_RE.test(file.name);
+    try{
+      let chapters;
+      const unresolved = [];
+      if (isFoundation){
+        chapters = parseFoundationToChapters(await file.text(), imageMap, relativePath, unresolved);
+      } else if (isDocx){
+        const buf = await file.arrayBuffer();
+        const res = await mammoth.convertToHtml({ arrayBuffer: buf });
+        chapters = parseHtmlToChapters(res.value);
+        if (!chapters.length){
+          chapters = parseTextToChapters(await file.text().catch(()=>"") || "", imageMap, relativePath, unresolved);
+        }
+      } else {
+        chapters = parseTextToChapters(await file.text(), imageMap, relativePath, unresolved);
+      }
+      const total = isFoundation ? chapters.length : chapters.reduce((s,c)=>s+c.items.length,0);
+      if (!total){
+        const reason = isFoundation ? "no chapter headings found" : "no Q./A. pairs found";
+        logEl.innerHTML += `<div class="err">\u2715 ${escapeHtml(file.name)} \u2014 ${reason}</div>`;
+        continue;
+      }
+      const name = cleanDeckName(file.name);
+      // Matched by name AND type: a Q&A deck and a foundation deck for the same chapter now
+      // legitimately share a display name (cleanDeckName strips both ".qa"/".foundation"
+      // markers), so name-only matching would treat them as the same deck — silently
+      // overwriting one with the other, or crashing mergeOldItemState against foundation
+      // chapters (which have no .items) when a Q&A import lands on a same-named foundation entry.
+      const existing = state.subjects.findIndex(s => s.name===name && (s.type === "foundation") === isFoundation);
+      let subj;
+      if (isFoundation){
+        subj = { name, type: "foundation", chapters, sourceFileName: file.name };
+      } else {
+        // Carry stars/notes/review-progress forward from whatever copy of this deck is already
+        // loaded, so re-importing (the normal way to pick up source-file edits) doesn't wipe them.
+        mergeOldItemState(chapters, existing >= 0 ? state.subjects[existing].chapters : null);
+        const sidecarName = sidecarNameFor(file.name);
+        const sidecarNotes = dirHandle ? await readSidecarNotes(dirHandle, sidecarName) : null;
+        if (sidecarNotes){
+          // The sidecar file on disk wins over whatever was already in memory — it may have
+          // been synced in from another machine, which is the whole point of storing review
+          // progress here in the first place.
+          chapters.forEach(c => c.items.forEach(it => {
+            const fromFile = sidecarNotes.get(noteKey(it.q));
+            if (fromFile){
+              if (fromFile.note) it.note = fromFile.note;
+              it.starred = fromFile.starred;
+              if (fromFile.srs){
+                it.srsDue = fromFile.srs.due;
+                it.srsInterval = fromFile.srs.interval;
+                it.srsEase = fromFile.srs.ease;
+                it.srsReps = fromFile.srs.reps;
+              }
+            }
+          }));
+        }
+        subj = { name, chapters, noteDirHandle: dirHandle || null, sidecarName, sourceFileName: file.name };
+        prepareSubjects([subj]);
+      }
+      if (existing >= 0){ state.subjects[existing] = subj; state.subjectIdx = existing; }
+      else { state.subjects.push(subj); state.subjectIdx = state.subjects.length - 1; }
+      rememberCurrentSubject();
+      loadedAny = true;
+      const summary = isFoundation ? `${chapters.length} chapters` : `${chapters.length} chapters, ${total} cards`;
+      logEl.innerHTML += `<div class="ok">\u2713 ${escapeHtml(file.name)} \u2014 ${summary}</div>`;
+      if (unresolved.length){
+        logEl.innerHTML += `<div class="err">\u26a0 ${unresolved.length} image reference${unresolved.length===1?"":"s"} unresolved in ${escapeHtml(file.name)}: ${unresolved.map(escapeHtml).join("; ")}</div>`;
+      }
+    }catch(e){
+      logEl.innerHTML += `<div class="err">\u2715 ${escapeHtml(file.name)} \u2014 could not be read</div>`;
+    }
+  }
+
+  if (imageEntries.length){
+    logEl.innerHTML += `<div class="ok">${imageEntries.length} image${imageEntries.length===1?"":"s"} found and available for embeds</div>`;
+  }
+
+  if (loadedAny){
+    state.chapterFilter = -1;
+    await saveSubjectsToDB(state.subjects);
+    enterApp();
+  }
+}
+
+// ================= deck operations =================
+function currentSubject(){
+  return state.subjects[state.subjectIdx] || null;
+}
+
+// Remembers the current deck/note as the last one viewed for its type, so switching the
+// Q/A ⇄ Notes toggle and switching back lands on it again instead of always jumping to the
+// first deck of that type. Call after anything that changes state.subjectIdx to a meaningful
+// (user-relevant) subject.
+function rememberCurrentSubject(){
+  const subj = currentSubject();
+  if (!subj) return;
+  if (subj.type === "foundation") state.lastFoundationSubject = subj;
+  else state.lastQaSubject = subj;
+}
+
+function buildDeck(shuffle){
+  const subj = currentSubject();
+  const chaps = state.chapterFilter === -1 ? subj.chapters : [subj.chapters[state.chapterFilter]];
+  // Quiz mode is the spaced-repetition review queue — only cards actually due right now (unless
+  // reviewAllDue overrides that, from the "Review anyway" fallback when nothing's due). Study/
+  // Browse are unaffected — they're still the "see everything" modes.
+  const dueOnly = state.mode === "quiz" && !state.reviewAllDue;
+  const now = Date.now();
+  const deck = [];
+  chaps.forEach(c => c.items.forEach(it => {
+    if (state.starredOnly && !it.starred) return;
+    if (dueOnly && it.srsDue > now) return;
+    deck.push({ ...it, chapter: c.title, subj: subj.name, source: it });
+  }));
+  if (shuffle){
+    for (let i = deck.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+  }
+  state.deck = deck; state.pos = 0; state.revealed = false;
+}
+
+// ================= rendering engine =================
+function enterApp(){
+  $("importView").classList.add("hidden");
+  $("appView").classList.remove("hidden");
+  // Catches duplicate decks left over from before cleanDeckName()/mergeDuplicateSubjects()
+  // existed, or created by a fresh import landing on a name that collides with one already
+  // in memory. curSubj is tracked by reference (falling back to its now-fixed name) since
+  // prepareSubjects() may rename or fold the currently-viewed subject into another object.
+  const curSubj = currentSubject();
+  if (prepareSubjects(state.subjects)) saveSubjectsToDB(state.subjects);
+  if (curSubj){
+    let idx = state.subjects.indexOf(curSubj);
+    if (idx === -1) idx = state.subjects.findIndex(s => s.name === curSubj.name && (s.type === "foundation") === (curSubj.type === "foundation"));
+    if (idx >= 0) state.subjectIdx = idx;
+  }
+  ensureValidTypeFilter();
+  renderTypeToggle();
+  renderSubjectSelect();
+  renderChips();
+  ensureValidModeForSubject();
+  setMode(state.mode, true);
+}
+
+// Whether a subject belongs to the "foundation" or "qa" bucket of the content-type toggle.
+// Deliberately just "not foundation" for the qa bucket (not a strict .qa.md filename check) —
+// an earlier stricter version made a deck vanish from BOTH the dropdown and Settings with no
+// error whenever its filename didn't exactly match (e.g. a stray double dot), and if enough
+// decks missed the mark it could even hide the toggle itself. isQaFile() is still used (see
+// mergeDuplicateSubjects) to prefer a canonically-named copy when two decks are true duplicates.
+function matchesTypeFilter(subj, filter){
+  return filter === "foundation" ? subj.type === "foundation" : subj.type !== "foundation";
+}
+
+// Custom in-app dropdown for deck selection — a native <select> pops the OS-level
+// picker on mobile instead of a styled in-app list, which is what this replaces.
+// Only lists decks matching state.typeFilter (see the Notes/Q&A toggle in Settings), so a vault
+// mixing foundation notes and Q&A decks doesn't force scrolling past the irrelevant kind.
+function renderSubjectSelect(){
+  $("subjectDDList").innerHTML = state.subjects
+    .map((s,i)=>({s,i}))
+    .filter(({s}) => matchesTypeFilter(s, state.typeFilter))
+    // Sorted A-Z for display only — data-idx still points at each subject's real position in
+    // state.subjects, so selecting a sorted entry doesn't disturb subjectIdx/persistence
+    // elsewhere in the app, which all reference that underlying (unsorted) array by index.
+    .sort((a,b) => a.s.name.localeCompare(b.s.name, undefined, { sensitivity: "base" }))
+    .map(({s,i}) => `<li role="option" data-idx="${i}" aria-selected="${i===state.subjectIdx}">${escapeHtml(s.name)}</li>`)
+    .join("");
+  const cur = currentSubject();
+  $("subjectDDLabel").textContent = cur ? cur.name : "—";
+}
+
+// Keeps state.typeFilter valid as decks are added/removed/reselected. Whenever there's a
+// current subject, the filter is synced to match it (so the toggle and dropdown reflect what's
+// actually on screen). Otherwise falls back off a bucket that's gone empty, e.g. after deleting
+// the last deck of that type.
+function ensureValidTypeFilter(){
+  const cur = currentSubject();
+  if (cur){
+    state.typeFilter = cur.type === "foundation" ? "foundation" : "qa";
+    return;
+  }
+  const hasFoundation = state.subjects.some(s => s.type === "foundation");
+  const hasQA = state.subjects.some(s => matchesTypeFilter(s, "qa"));
+  if (state.typeFilter === "foundation" && !hasFoundation) state.typeFilter = "qa";
+  else if (state.typeFilter === "qa" && !hasQA) state.typeFilter = "foundation";
+}
+
+// Mirrors the theme toggle's icon-swap convention: the icon shown is the one you'll switch TO
+// (a book while viewing Q/A — click to go read Notes — and cards while viewing Notes), not the
+// current state. The whole button is hidden unless the loaded decks actually span both types.
+function renderTypeToggle(){
+  const hasFoundation = state.subjects.some(s => s.type === "foundation");
+  const hasQA = state.subjects.some(s => matchesTypeFilter(s, "qa"));
+  $("typeFilterToggle").classList.toggle("hidden", !(hasFoundation && hasQA));
+  const onNotes = state.typeFilter === "foundation";
+  $("typeFilterToggle").querySelector(".icon-cards").classList.toggle("hidden", !onNotes);
+  $("typeFilterToggle").querySelector(".icon-book").classList.toggle("hidden", onNotes);
+}
+
+// Fired by the header Q/A ⇄ Notes toggle — switches which decks the dropdown lists, jumps back
+// to whichever deck/note of that type was last viewed (falling back to the first match if none
+// was viewed yet this session, or it's since been deleted), and remembers the choice for next
+// time the app is opened.
+function setTypeFilter(type){
+  if (state.typeFilter === type) return;
+  stopReading(); // switching content type invalidates whatever chapter was queued up to read
+  state.typeFilter = type;
+  const remembered = type === "foundation" ? state.lastFoundationSubject : state.lastQaSubject;
+  let idx = remembered ? state.subjects.indexOf(remembered) : -1;
+  if (idx === -1) idx = state.subjects.findIndex(s => matchesTypeFilter(s, type));
+  if (idx >= 0){
+    state.subjectIdx = idx;
+    rememberCurrentSubject();
+    state.chapterFilter = -1;
+    state.reviewAllDue = false;
+  }
+  renderTypeToggle();
+  renderSubjectSelect();
+  renderSettingsDeckList();
+  ensureValidModeForSubject();
+  renderChips();
+  setMode(state.mode, true);
+  saveMeta("typeFilter", type);
+}
+
+function closeSubjectDD(){
+  $("subjectDD").classList.remove("open");
+  $("subjectDDList").classList.add("hidden");
+  $("subjectDDBtn").setAttribute("aria-expanded","false");
+}
+
+function openSubjectDD(){
+  if (!state.subjects.length) return;
+  $("subjectDD").classList.add("open");
+  $("subjectDDList").classList.remove("hidden");
+  $("subjectDDBtn").setAttribute("aria-expanded","true");
+  $("subjectDDList").querySelectorAll("li").forEach(li=>
+    li.classList.toggle("active", parseInt(li.dataset.idx,10) === state.subjectIdx));
+  const active = $("subjectDDList").querySelector("li.active");
+  if (active) active.scrollIntoView({ block:"nearest" });
+}
+
+function selectSubject(idx){
+  stopReading(); // switching decks invalidates whatever chapter was queued up to read
+  state.subjectIdx = idx;
+  rememberCurrentSubject();
+  state.chapterFilter = -1;
+  state.reviewAllDue = false;
+  ensureValidTypeFilter();
+  renderTypeToggle();
+  renderSubjectSelect();
+  closeSubjectDD();
+  $("subjectDDBtn").focus();
+  ensureValidModeForSubject();
+  renderChips(); setMode(state.mode,true);
+}
+
+// ================= deck settings menu (shuffle, per-deck delete, clear all) =================
+function showImportView(){
+  $("importView").classList.remove("hidden");
+  $("appView").classList.add("hidden");
+  $("parseLog").innerHTML = "";
+  $("miniLog").innerHTML = "";
+}
+
+async function clearAllDecks(){
+  stopReading();
+  state.subjects = [];
+  state.subjectIdx = 0;
+  state.chapterFilter = -1;
+  state.deck = [];
+  await saveSubjectsToDB([]);
+  showImportView();
+}
+
+async function deleteDeck(idx){
+  const subj = state.subjects[idx];
+  if (!subj) return;
+  if (!confirm(`Delete deck "${subj.name}"? This cannot be undone.`)) return;
+  stopReading(); // the deleted deck (or its chapter numbering) may be the one queued up to read
+  state.subjects.splice(idx, 1);
+  if (!state.subjects.length){
+    await saveSubjectsToDB([]);
+    closeSettingsPanel();
+    showImportView();
+    return;
+  }
+  if (idx < state.subjectIdx) state.subjectIdx--;
+  else if (idx === state.subjectIdx) state.subjectIdx = Math.min(state.subjectIdx, state.subjects.length - 1);
+  state.chapterFilter = -1;
+  await saveSubjectsToDB(state.subjects);
+  ensureValidTypeFilter();
+  renderTypeToggle();
+  renderSubjectSelect();
+  renderSettingsDeckList();
+  ensureValidModeForSubject();
+  renderChips();
+  setMode(state.mode, true);
+}
+
+// Only lists decks matching state.typeFilter — same Q/A ⇄ Notes split as the subject dropdown,
+// so managing/deleting decks doesn't require scrolling past the other content type. data-idx
+// stays the deck's real index into state.subjects (not its position in this filtered list), so
+// delete/export still target the right deck regardless of what's filtered out.
+function renderSettingsDeckList(){
+  $("settingsDeckList").innerHTML = state.subjects
+    .map((s,i)=>({s,i}))
+    .filter(({s}) => matchesTypeFilter(s, state.typeFilter))
+    .map(({s,i})=>{
+      const hasNotes = s.type !== "foundation" && s.chapters.some(c => c.items.some(it =>
+        (it.note && it.note.trim()) || it.starred || hasReviewProgress(it)));
+      const exportBtn = hasNotes
+        ? `<button class="settings-del" data-export-idx="${i}" type="button" title="Export notes (.md)" aria-label="Export notes for ${escapeHtml(s.name)}">⬇</button>`
+        : "";
+      return `<div class="settings-deck-row">
+        <span class="settings-deck-name" title="${escapeHtml(s.name)}">${escapeHtml(s.name)}</span>
+        <div class="settings-deck-actions">
+          ${exportBtn}
+          <button class="settings-del" data-idx="${i}" type="button" aria-label="Delete deck ${escapeHtml(s.name)}">✕</button>
+        </div>
+      </div>`;
+    }).join("");
+}
+
+// Manual notes backup/handoff — always available (not just Tier 2), since it's a cheap way
+// to get a copy of a deck's notes out of the browser regardless of how it was imported.
+function exportNotesFile(subj){
+  const allItems = subj.chapters.flatMap(c => c.items);
+  const text = buildSidecarText(subj.name, allItems);
+  const blob = new Blob([text], { type: "text/markdown" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = sidecarNameFor(subj.sourceFileName || (subj.name + ".md"));
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+// Re-reads every deck that was loaded via folder import (has a retained directory handle)
+// to pick up edits made outside the app (e.g. in Obsidian) — reuses the exact same loadFiles()
+// pipeline as a fresh import, so parsing, star/note carry-forward, and sidecar-note merging
+// all behave identically. Decks loaded via the manual picker have no handle to re-read from
+// and are skipped; the user has to re-add those by hand if they've changed.
+async function recheckFilesForUpdates(logEl){
+  const handleSubjects = state.subjects.filter(s => s.noteDirHandle);
+  if (!handleSubjects.length){
+    logEl.innerHTML = `<div class="err">✕ No decks were imported via folder — use "+ add folder" so they can be rechecked.</div>`;
+    return;
+  }
+  const curSubj = currentSubject();
+  const currentName = curSubj ? curSubj.name : null;
+  const currentIsFoundation = curSubj ? curSubj.type === "foundation" : false;
+  logEl.innerHTML = `<div class="ok">Rechecking…</div>`;
+  const seen = new Set();
+  let combined = "";
+  for (const subj of handleSubjects){
+    if (seen.has(subj.noteDirHandle)) continue; // same folder shared by more than one loaded deck
+    seen.add(subj.noteDirHandle);
+    const tempLog = document.createElement("div");
+    try {
+      if (!(await ensureReadPermission(subj.noteDirHandle))){
+        tempLog.innerHTML = `<div class="err">✕ Permission denied for a folder — could not recheck it.</div>`;
+      } else {
+        const entries = await collectFilesFromDirHandle(subj.noteDirHandle);
+        await loadFiles(entries, tempLog, { silentSkip: true });
+      }
+    } catch (e) {
+      tempLog.innerHTML += `<div class="err">✕ Could not recheck a folder — ${escapeHtml(e && e.message || "unknown error")}</div>`;
+    }
+    combined += tempLog.innerHTML;
+  }
+  // loadFiles() switches state.subjectIdx to whatever it last processed — restore whichever
+  // deck the user was actually looking at before the recheck ran.
+  if (currentName){
+    // Matched by name AND type — a Q&A deck and a foundation deck can legitimately share a
+    // display name now, so name-only matching could land back on the wrong one of the pair.
+    const idx = state.subjects.findIndex(s => s.name === currentName && (s.type === "foundation") === currentIsFoundation);
+    if (idx >= 0) state.subjectIdx = idx;
+    rememberCurrentSubject(); // loadFiles() above may have remembered whatever it processed last instead
+  }
+  ensureValidTypeFilter();
+  renderTypeToggle();
+  ensureValidModeForSubject();
+  renderSubjectSelect();
+  renderSettingsDeckList();
+  renderChips();
+  setMode(state.mode, true);
+  logEl.innerHTML = combined || `<div class="ok">✓ Up to date.</div>`;
+}
+
+function openSettingsPanel(){
+  const hasDecks = state.subjects.length > 0;
+  $("deckManageSection").classList.toggle("hidden", !hasDecks);
+  if (hasDecks){
+    renderSettingsDeckList();
+    $("recheckAction").disabled = !state.subjects.some(s => s.noteDirHandle);
+    $("recheckLog").innerHTML = "";
+  }
+  renderReadAloud();
+  $("settingsPanel").classList.remove("hidden");
+  $("settingsBtn").setAttribute("aria-expanded","true");
+}
+
+function closeSettingsPanel(){
+  $("settingsPanel").classList.add("hidden");
+  $("settingsBtn").setAttribute("aria-expanded","false");
+}
+
+// Switches the current chapter/section scope — shared by the chapter chips, the foundation
+// Prev/Next nav, and the TOC panel so all three stay in sync however the switch was triggered.
+function selectChapter(idx){
+  state.chapterFilter = idx;
+  state.reviewAllDue = false; // a narrower/different chapter scope needs its own due-check
+  renderChips();
+  setMode(state.mode, true);
+}
+
+function renderChips(){
+  const subj = currentSubject();
+  const chips = [`<button class="chip ${state.chapterFilter===-1?"active":""}" data-ch="-1"><b>ALL CHAPTERS</b></button>`];
+  subj.chapters.forEach((c,i)=>{
+    const num = chapNum(c.title);
+    const label = (num ? `<b>${escapeHtml(num)}</b> \u00b7 ` : "") + escapeHtml(chapName(c.title));
+    chips.push(`<button class="chip ${state.chapterFilter===i?"active":""}" data-ch="${i}" title="${escapeHtml(c.title)}">${label}</button>`);
+  });
+  $("chapChips").innerHTML = chips.join("");
+  $("chapChips").querySelectorAll(".chip").forEach(b=>{
+    b.onclick = () => selectChapter(parseInt(b.dataset.ch,10));
+  });
+  const isFoundation = subj.type === "foundation";
+  $("deckFilters").classList.toggle("hidden", isFoundation);
+  $("starFilterBtn").classList.toggle("active", state.starredOnly);
+  $("starFilterBtn").setAttribute("aria-pressed", String(state.starredOnly));
+  $("starFilterBtn").textContent = state.starredOnly ? "★ STARRED ONLY" : "☆ STARRED ONLY";
+  renderQuizDueBadge();
+}
+
+// How many cards in the current chapter/star selection are due for spaced-repetition review
+// right now (srsDue <= now — a card that's never been reviewed defaults to srsDue:0, so it's
+// always due until its first review). Scoped identically to what buildDeck() would actually
+// queue for Quiz mode, so the badge always matches what pressing the tab will show.
+function dueCardCount(){
+  const subj = currentSubject();
+  if (!subj || subj.type === "foundation") return 0;
+  const chaps = state.chapterFilter === -1 ? subj.chapters : [subj.chapters[state.chapterFilter]];
+  const now = Date.now();
+  let count = 0;
+  chaps.forEach(c => c.items.forEach(it => {
+    if (state.starredOnly && !it.starred) return;
+    if (it.srsDue <= now) count++;
+  }));
+  return count;
+}
+
+function renderQuizDueBadge(){
+  const n = dueCardCount();
+  $("quizDueBadge").textContent = n > 0 ? String(n) : "";
+  $("quizDueBadge").classList.toggle("hidden", n === 0);
+}
+
+// Foundation decks are reference chapters, not flashcards — Quiz mode has nothing to quiz,
+// so switching to (or loading into) one while Quiz is active falls back to Study instead.
+function ensureValidModeForSubject(){
+  const subj = currentSubject();
+  if (subj && subj.type === "foundation" && state.mode === "quiz") state.mode = "study";
+}
+
+function setMode(mode, rebuild){
+  state.mode = mode;
+  const subj = currentSubject();
+  const isFoundation = !!(subj && subj.type === "foundation");
+  document.body.classList.toggle("notes-mode", isFoundation); // swaps the shared chip/progress-bar accent to teal — see body.notes-mode rules
+
+  // Foundation decks are reference chapters, not flashcards — Study/Quiz/Browse have nothing
+  // to distinguish (Browse rendered the exact same chapter accordion Study now shows directly),
+  // so the tab bar is hidden. The chapter chips stay, though — jumping to a single chapter in a
+  // long foundation doc is still useful even without Study/Quiz/Browse to choose between.
+  $("modesRow").classList.toggle("hidden", isFoundation);
+  ["Study","Quiz","Browse"].forEach(m=>{
+    $("m"+m).classList.toggle("active", mode === m.toLowerCase());
+  });
+  $("mQuiz").disabled = isFoundation;
+
+  $("browseStage").classList.toggle("hidden", isFoundation || mode !== "browse");
+  $("foundationStage").classList.toggle("hidden", !isFoundation);
+  $("cardStage").classList.toggle("hidden", isFoundation || mode === "browse");
+  $("resultStage").classList.add("hidden");
+  $("studyNav").classList.toggle("hidden", isFoundation || mode !== "study");
+  $("quizGrade").classList.toggle("hidden", isFoundation || mode !== "quiz");
+
+  if (isFoundation){ renderFoundationStudy(); return; }
+  if (mode === "browse"){ renderBrowse(); return; }
+
+  if (rebuild){
+    buildDeck(mode === "quiz");
+    if (mode === "quiz") state.quiz = { active:true, correct:0, missed:[] };
+  }
+  renderCard();
+}
+
+// Renders a chapter accordion in the "Browse" visual format (collapsible <details> per
+// chapter). Shared between Browse mode (for every deck) and Study mode for foundation decks.
+const READING_WPM = 200; // rough average adult silent-reading speed, for the "~N MIN READ" badge
+function renderChapterAccordion(chaps, term){
+  let html = "";
+  const scratch = document.createElement("div"); // reused per chapter for the word-count pass
+  chaps.forEach(c => {
+    if (term && !c.content.toLowerCase().includes(term)) return;
+    const bodyHtml = renderMarkdown(c.content);
+    // Counted off the already-rendered HTML (via textContent) rather than the raw markdown, so
+    // syntax characters (#, *, etc.) and unrendered link targets don't inflate the word count.
+    scratch.innerHTML = bodyHtml;
+    const words = scratch.textContent.trim().split(/\s+/).filter(Boolean).length;
+    const minutes = Math.max(1, Math.round(words / READING_WPM));
+    html += `<details class="chap" ${term || chaps.length === 1 ? "open" : ""}>
+      <summary>${escapeHtml(c.title)} <span class="n">~${minutes} MIN READ</span></summary>
+      <div class="chap-body">${bodyHtml}</div>
+    </details>`;
+  });
+  return html || `<div class="empty-note">NO MATCHES ON THIS SHEET</div>`;
+}
+
+function renderFoundationStudy(){
+  const subj = currentSubject();
+  const chaps = state.chapterFilter === -1 ? subj.chapters : [subj.chapters[state.chapterFilter]];
+  $("foundationList").innerHTML = renderChapterAccordion(chaps, "");
+  if (typeof renderMathInElement === "function") renderMathInElement($("foundationList"), KATEX_OPTIONS);
+
+  // Opening/closing a chapter in "ALL CHAPTERS" mode changes the scrollable height, which the
+  // progress bar depends on — recompute without waiting for a scroll event.
+  $("foundationList").querySelectorAll(":scope > details.chap").forEach(d=>{
+    d.addEventListener("toggle", updateFoundationProgress);
+  });
+
+  $("foundationNav").classList.toggle("hidden", subj.chapters.length <= 1);
+  renderToc();
+  updateFoundationProgress();
+}
+
+function stepFoundationChapter(dir){
+  const subj = currentSubject();
+  const total = subj.chapters.length;
+  const idx = currentReadingIdx(subj);
+  const next = Math.min(total - 1, Math.max(0, idx + dir));
+  if (next === idx && state.chapterFilter !== -1) return;
+  selectChapter(next);
+}
+
+// Which chapter counts as "current" for the progress bar/TOC: the explicit chip/nav pick when
+// one's active, or — in "ALL CHAPTERS" mode, where several sections can be open and scrolled
+// through at once — whichever section's heading has scrolled up past the sticky progress bar.
+function currentReadingIdx(subj){
+  if (state.chapterFilter !== -1) return state.chapterFilter;
+  const chapEls = [...$("foundationList").querySelectorAll(":scope > details.chap")];
+  if (!chapEls.length) return 0;
+  const line = document.querySelector(".notes-progress").getBoundingClientRect().bottom;
+  let idx = 0;
+  chapEls.forEach((el,i) => { if (el.getBoundingClientRect().top <= line + 4) idx = i; });
+  return idx;
+}
+
+// Reading progress bar + section label/TOC highlight — recomputed on scroll/resize (see the
+// listeners below) rather than baked from chapterFilter alone, so the bar tracks how far you've
+// actually scrolled through the current chapter's content instead of just jumping in fixed
+// per-chapter steps.
+function updateFoundationProgress(){
+  const subj = currentSubject();
+  if (!subj || subj.type !== "foundation" || $("foundationStage").classList.contains("hidden")) return;
+  const total = subj.chapters.length;
+  if (!total){ $("fPosLabel").textContent = ""; $("fBarFill").style.width = "0%"; return; }
+
+  // The scroll distance needed for the content's bottom edge to reach the viewport's bottom
+  // edge has to be measured in absolute (document) coordinates, not live viewport-relative
+  // ones — recomputing it from the current (already-scrolled) rect.top made the "total distance"
+  // shrink in lockstep with scrolling, which hit 100% as early as ~30% of the way down a tall
+  // chapter instead of at the actual end.
+  const list = $("foundationList");
+  const rect = list.getBoundingClientRect();
+  const absoluteTop = rect.top + window.scrollY;
+  const totalScroll = absoluteTop + list.offsetHeight - window.innerHeight;
+  const progress = totalScroll <= 0 ? 1 : Math.min(1, Math.max(0, window.scrollY / totalScroll));
+  $("fBarFill").style.width = (progress * 100) + "%";
+
+  const idx = currentReadingIdx(subj);
+  $("fPosLabel").textContent = `${subj.name} · CHAPTER ${idx + 1} / ${total}`;
+  $("fChapLabel").textContent = subj.chapters[idx] ? subj.chapters[idx].title : "";
+  $("fPrevBtn").disabled = idx === 0;
+  $("fNextBtn").disabled = idx >= total - 1;
+
+  // TOC highlight: which chapter is current in "ALL CHAPTERS" mode, or which subheading has
+  // scrolled up past the sticky progress bar within a single selected chapter (see renderToc()).
+  if (state.chapterFilter === -1){
+    $("tocList").querySelectorAll("li[data-ch]").forEach(li=>{
+      const isCurrent = parseInt(li.dataset.ch,10) === idx;
+      li.classList.toggle("active", isCurrent);
+      li.setAttribute("aria-selected", String(isCurrent));
+    });
+  } else {
+    const subEls = [...$("foundationList").querySelectorAll(".chap-body h2, .chap-body h3")];
+    if (subEls.length){
+      // The last heading often can't be scrolled all the way up past the line — there may not
+      // be enough trailing content/page height left below it — so a plain "top <= line" crossing
+      // check can get stuck on the second-to-last heading forever. Treat "scrolled to the bottom
+      // of the page" as its own case so the last heading still lights up once you get there.
+      const atBottom = Math.ceil(window.scrollY + window.innerHeight) >= document.documentElement.scrollHeight;
+      let activeId = subEls[0].id; // before the first heading reaches the line, it's still "current"
+      if (atBottom){
+        activeId = subEls[subEls.length - 1].id;
+      } else {
+        const line = document.querySelector(".notes-progress").getBoundingClientRect().bottom;
+        subEls.forEach(el => { if (el.getBoundingClientRect().top <= line + 4) activeId = el.id; });
+      }
+      $("tocList").querySelectorAll("li[data-target]").forEach(li=>{
+        const isCurrent = li.dataset.target === activeId;
+        li.classList.toggle("active", isCurrent);
+        li.setAttribute("aria-selected", String(isCurrent));
+      });
+    }
+  }
+}
+
+// Table-of-contents dropdown for the Notes progress bar. "ALL CHAPTERS" mode lists chapters by
+// name (clicking one selects it, same as a chip); once a single chapter is selected, it instead
+// lists that chapter's subsections (## / ### headings) so you can jump within it. The active
+// highlight is kept live by updateFoundationProgress() as you scroll, not just on click.
+function renderToc(){
+  const subj = currentSubject();
+  if (!subj) return;
+
+  if (state.chapterFilter === -1){
+    $("tocToggleBtn").disabled = !subj.chapters.length;
+    $("tocList").innerHTML = subj.chapters.length
+      ? subj.chapters.map((c,i) => {
+          const num = chapNum(c.title);
+          const label = (num ? `<b>${escapeHtml(num)}</b> · ` : "") + escapeHtml(chapName(c.title));
+          return `<li role="option" data-ch="${i}">${label}</li>`;
+        }).join("")
+      : `<li class="toc-empty">No chapters</li>`;
+    $("tocList").querySelectorAll("li[data-ch]").forEach(li=>{
+      li.onclick = () => { selectChapter(parseInt(li.dataset.ch,10)); closeToc(); };
+    });
+    return;
+  }
+
+  const headings = [...$("foundationList").querySelectorAll(".chap-body h2, .chap-body h3")];
+  headings.forEach((h,i) => { h.id = `toc-sub-${i}`; });
+  $("tocToggleBtn").disabled = !headings.length;
+  $("tocList").innerHTML = headings.length
+    ? headings.map(h => `<li role="option" class="${h.tagName==="H3"?"sub-h3":""}" data-target="${h.id}">${escapeHtml(h.textContent)}</li>`).join("")
+    : `<li class="toc-empty">No subsections in this chapter</li>`;
+  $("tocList").querySelectorAll("li[data-target]").forEach(li=>{
+    li.onclick = () => { jumpToHeading(li.dataset.target); closeToc(); };
+  });
+}
+
+// Scrolls a subsection heading to just below the sticky progress bar (rather than the very top
+// of the viewport, which would tuck it under the sticky bar).
+function jumpToHeading(id){
+  const el = document.getElementById(id);
+  if (!el) return;
+  const line = document.querySelector(".notes-progress").getBoundingClientRect().bottom;
+  const y = window.scrollY + el.getBoundingClientRect().top - line - 12;
+  window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+}
+
+function closeToc(){
+  $("tocDD").classList.remove("open");
+  $("tocList").classList.add("hidden");
+  $("tocToggleBtn").setAttribute("aria-expanded","false");
+}
+
+function openToc(){
+  if ($("tocToggleBtn").disabled) return;
+  $("tocDD").classList.add("open");
+  $("tocList").classList.remove("hidden");
+  $("tocToggleBtn").setAttribute("aria-expanded","true");
+  const active = $("tocList").querySelector("li.active");
+  if (active) active.scrollIntoView({ block:"nearest" });
+}
+
+// Whether the current chapter/star selection has any cards at all, ignoring due-date — used to
+// tell "nothing's due yet" (offer Review anyway) apart from "this selection is just empty"
+// (e.g. Starred Only with nothing starred), which need different empty-state messages.
+function hasCardsInScope(){
+  const subj = currentSubject();
+  if (!subj || subj.type === "foundation") return false;
+  const chaps = state.chapterFilter === -1 ? subj.chapters : [subj.chapters[state.chapterFilter]];
+  return chaps.some(c => c.items.some(it => !state.starredOnly || it.starred));
+}
+
+function renderCard(){
+  const n = state.deck.length;
+  if (!n){
+    $("qLabel").textContent = "NO CARDS";
+    $("chName").textContent = "";
+    if (state.mode === "quiz" && !state.reviewAllDue && hasCardsInScope()){
+      $("qText").innerHTML = `Nothing due for review right now.<br><button class="review-anyway-btn" id="reviewAnywayBtn" type="button">Review anyway</button>`;
+      $("reviewAnywayBtn").onclick = () => { state.reviewAllDue = true; setMode("quiz", true); };
+    } else {
+      $("qText").textContent = state.starredOnly ? "No starred cards in this selection." : "No cards in this selection.";
+    }
+    $("aText").classList.add("hidden"); $("aHidden").classList.add("hidden");
+    $("posLabel").textContent = ""; $("scoreLabel").textContent = ""; $("barFill").style.width = "0%";
+    $("prevBtn").disabled = true; $("nextBtn").disabled = true; $("flipBtn").disabled = true;
+    $("starBtn").disabled = true; $("noteBtn").disabled = true;
+    $("missBtn").disabled = true; $("passBtn").disabled = true;
+    if (noteEditingCard) closeNotePanel();
+    return;
+  }
+  const c = state.deck[state.pos];
+  $("qLabel").textContent = "Q-" + String(state.pos+1).padStart(3,"0");
+  $("chName").textContent = c.chapter;
+  $("chName").title = c.chapter;
+  $("qText").innerHTML = renderMarkdown(c.q);
+  $("aText").innerHTML = renderMarkdown(c.a);
+  $("aText").classList.toggle("hidden", !state.revealed);
+  $("aHidden").classList.toggle("hidden", state.revealed);
+  $("flipBtn").textContent = state.revealed ? "Hide" : "Reveal";
+  $("posLabel").textContent = `CARD ${state.pos+1} / ${n}`;
+  $("barFill").style.width = ((state.pos + (state.mode==="quiz"?0:1)) / n * 100) + "%";
+  $("tbSubject").textContent = c.subj;
+  $("tbSubject").title = c.subj;
+  $("tbSheet").textContent = `${state.pos+1} OF ${n}`;
+  $("scoreLabel").textContent = state.mode === "quiz"
+    ? `\u2713 ${state.quiz.correct}   \u2715 ${state.quiz.missed.length}` : "";
+  $("prevBtn").disabled = state.pos === 0;
+  $("nextBtn").disabled = state.pos === n - 1;
+  $("flipBtn").disabled = false;
+  $("starBtn").disabled = false; $("noteBtn").disabled = false;
+  $("missBtn").disabled = false; $("passBtn").disabled = false;
+  $("starBtn").classList.toggle("starred", c.source.starred);
+  $("starBtn").setAttribute("aria-pressed", String(c.source.starred));
+  $("starBtn").setAttribute("aria-label", c.source.starred ? "Unstar this card" : "Star this card");
+  const hasNote = !!(c.source.note && c.source.note.trim());
+  $("noteBtn").classList.toggle("has-note", hasNote);
+  $("noteBtn").setAttribute("aria-label", hasNote ? "Edit note on this card" : "Add a note to this card");
+  if (noteEditingCard && noteEditingCard !== c) closeNotePanel();
+
+  // Real-time typesetting invocation across the active card block
+  if (typeof renderMathInElement === "function") {
+    renderMathInElement($("card"), KATEX_OPTIONS);
+  }
+}
+
+function flip(){ state.revealed = !state.revealed; renderCard(); }
+function move(d){
+  const np = state.pos + d;
+  if (np < 0 || np >= state.deck.length) return;
+  state.pos = np; state.revealed = false; renderCard();
+}
+
+async function persistDecks(){ await saveSubjectsToDB(state.subjects); }
+
+async function toggleStar(){
+  const c = state.deck[state.pos];
+  if (!c) return;
+  c.source.starred = !c.source.starred;
+  await persistDecks();
+  const subj = currentSubject();
+  if (subj && subj.noteDirHandle) await writeSidecarNotes(subj);
+  if (state.starredOnly){ buildDeck(state.mode === "quiz"); }
+  renderCard();
+}
+
+// ================= card note panel =================
+let noteEditingCard = null; // the deck-card whose note is currently open in the panel
+let noteMode = "view"; // "view" (rendered, read-only) or "edit" (raw textarea)
+
+function noteTierMessage(){
+  const subj = currentSubject();
+  if (subj && subj.noteDirHandle) return { text: `Saved to ${subj.sidecarName}`, tier1: true };
+  return { text: `Saved in this browser only — use "Export notes" in Settings to add it to a file.`, tier1: false };
+}
+
+// Notes render as markdown when just viewing (matching how Q/A already work elsewhere in the
+// app) and drop into a plain textarea only while actively editing — a note with no content yet
+// has nothing to render, so it skips straight to edit mode.
+function showNoteMode(mode){
+  const c = noteEditingCard;
+  noteMode = mode;
+  $("noteRendered").classList.toggle("hidden", mode !== "view");
+  $("noteTextarea").classList.toggle("hidden", mode !== "edit");
+  $("noteViewActions").classList.toggle("hidden", mode !== "view");
+  $("noteEditActions").classList.toggle("hidden", mode !== "edit");
+  if (mode === "view"){
+    $("noteRendered").innerHTML = renderMarkdown(c.source.note || "");
+    if (typeof renderMathInElement === "function") renderMathInElement($("noteRendered"), KATEX_OPTIONS);
+  } else {
+    $("noteTextarea").value = c.source.note || "";
+    $("noteTextarea").focus();
+    const len = $("noteTextarea").value.length;
+    $("noteTextarea").setSelectionRange(len, len);
+  }
+  const tier = noteTierMessage();
+  $("noteTierText").textContent = tier.text;
+  $("noteTierText").classList.toggle("tier1", tier.tier1);
+}
+
+function openNotePanel(){
+  const c = state.deck[state.pos];
+  if (!c) return;
+  noteEditingCard = c;
+  $("notePanel").classList.remove("hidden");
+  $("noteBackdrop").classList.remove("hidden");
+  $("noteBtn").setAttribute("aria-expanded", "true");
+  const hasNote = !!(c.source.note && c.source.note.trim());
+  showNoteMode(hasNote ? "view" : "edit");
+}
+
+function editNote(){ showNoteMode("edit"); }
+
+function closeNotePanel(){
+  $("notePanel").classList.add("hidden");
+  $("noteBackdrop").classList.add("hidden");
+  $("noteBtn").setAttribute("aria-expanded", "false");
+  noteEditingCard = null;
+}
+
+async function saveNote(){
+  const c = noteEditingCard;
+  if (!c){ closeNotePanel(); return; }
+  c.source.note = $("noteTextarea").value.trim();
+  await persistDecks();
+  const subj = currentSubject();
+  if (subj && subj.noteDirHandle){
+    const res = await writeSidecarNotes(subj);
+    if (!res.ok){
+      alert(`Could not save the note to ${subj.sidecarName} (${res.reason}). It's still saved in the app.`);
+    }
+  }
+  closeNotePanel();
+  renderCard();
+}
+
+function cancelNote(){
+  closeNotePanel();
+}
+
+// Tapping outside the panel autosaves rather than discarding (per spec) — but that only makes
+// sense while actively editing; in view mode there's nothing pending, so it just closes.
+function noteBackdropTap(){
+  if (noteMode === "edit") saveNote();
+  else closeNotePanel();
+}
+
+// ================= quiz logic (spaced repetition, SM-2-lite) =================
+const SRS_DAY_MS = 86400000;
+// SM-2 normally grades recall quality on a 0-5 scale; this app only has a binary Missed/Got it,
+// so that collapses to two paths: "got it" advances the standard SM-2 interval progression
+// (1 day -> 6 days -> interval*ease, growing indefinitely) and nudges ease up slightly: "missed"
+// resets progress to square one and nudges ease down more sharply (both clamped to SM-2's usual
+// [1.3, 2.8] range), so a card that's consistently hard ends up reviewed more often long-term
+// than one that's consistently easy.
+function scheduleReview(item, gotIt){
+  if (gotIt){
+    item.srsReps = (item.srsReps || 0) + 1;
+    if (item.srsReps === 1) item.srsInterval = 1;
+    else if (item.srsReps === 2) item.srsInterval = 6;
+    else item.srsInterval = Math.round((item.srsInterval || 1) * item.srsEase);
+    item.srsEase = Math.min(2.8, item.srsEase + 0.05);
+  } else {
+    item.srsReps = 0;
+    item.srsInterval = 1;
+    item.srsEase = Math.max(1.3, item.srsEase - 0.2);
+  }
+  item.srsDue = Date.now() + item.srsInterval * SRS_DAY_MS;
+}
+
+function grade(gotIt){
+  const c = state.deck[state.pos];
+  if (!c) return;
+  scheduleReview(c.source, gotIt);
+  persistDecks(); // fire-and-forget — don't block advancing to the next card on every grade
+  const subj = currentSubject();
+  if (subj && subj.noteDirHandle) writeSidecarNotes(subj); // same — keeps the on-disk copy live
+  renderQuizDueBadge();
+  if (gotIt) state.quiz.correct++;
+  else state.quiz.missed.push(c);
+  if (state.pos === state.deck.length - 1) showResults();
+  else { state.pos++; state.revealed = false; renderCard(); }
+}
+
+// Snapshot of the current chapter/star scope's SRS maturity + near-term schedule \u2014 same scope
+// dueCardCount() uses, so it reflects exactly what Quiz mode is drawing from. New/Learning/
+// Mature follows Anki's convention (21-day interval as the young/mature cutoff); "due tomorrow"/
+// "due this week" count forward from right now and deliberately exclude anything already due
+// (that's the header's due badge instead \u2014 this is about what's coming up next).
+function computeSrsStats(){
+  const subj = currentSubject();
+  if (!subj || subj.type === "foundation") return null;
+  const chaps = state.chapterFilter === -1 ? subj.chapters : [subj.chapters[state.chapterFilter]];
+  const now = Date.now();
+  const stats = { new: 0, learning: 0, mature: 0, dueTomorrow: 0, dueWeek: 0 };
+  chaps.forEach(c => c.items.forEach(it => {
+    if (state.starredOnly && !it.starred) return;
+    if (!it.srsReps) stats.new++;
+    else if (it.srsInterval >= 21) stats.mature++;
+    else stats.learning++;
+    if (it.srsDue > now){
+      if (it.srsDue <= now + SRS_DAY_MS) stats.dueTomorrow++;
+      if (it.srsDue <= now + 7 * SRS_DAY_MS) stats.dueWeek++;
+    }
+  }));
+  return stats;
+}
+
+// ================= result compilation =================
+function showResults(){
+  $("cardStage").classList.add("hidden");
+  $("resultStage").classList.remove("hidden");
+  const total = state.quiz.correct + state.quiz.missed.length;
+  $("scoreBig").innerHTML = `${state.quiz.correct}<small>/${total}</small>`;
+  const pct = total ? Math.round(state.quiz.correct/total*100) : 0;
+  $("scoreNote").textContent = pct === 100 ? "CLEAN SHEET \u2014 APPROVED FOR RELEASE"
+    : pct >= 70 ? `${pct}% \u2014 MINOR REVISIONS NOTED` : `${pct}% \u2014 RETURNED FOR REWORK`;
+
+  const stats = computeSrsStats();
+  $("resultStats").classList.toggle("hidden", !stats);
+  if (stats){
+    $("rsNew").textContent = stats.new;
+    $("rsLearning").textContent = stats.learning;
+    $("rsMature").textContent = stats.mature;
+    $("rsDueTomorrow").textContent = stats.dueTomorrow;
+    $("rsDueWeek").textContent = stats.dueWeek;
+  }
+
+  const has = state.quiz.missed.length > 0;
+  $("missedWrap").classList.toggle("hidden", !has);
+  $("retryMissedBtn").disabled = !has;
+  $("missedList").innerHTML = state.quiz.missed.map(m=>`<li>${renderMarkdown(m.q)}</li>`).join("");
+  
+  if (typeof renderMathInElement === "function") {
+    renderMathInElement($("missedList"), KATEX_OPTIONS);
+  }
+}
+
+function retryMissed(){
+  state.deck = state.quiz.missed.slice();
+  state.quiz = { active:true, correct:0, missed:[] };
+  state.pos = 0; state.revealed = false;
+  $("resultStage").classList.add("hidden");
+  $("cardStage").classList.remove("hidden");
+  renderCard();
+}
+
+// ================= search lookup =================
+function renderBrowse(){
+  const subj = currentSubject();
+  const term = $("searchBox").value.trim().toLowerCase();
+  const chaps = state.chapterFilter === -1 ? subj.chapters : [subj.chapters[state.chapterFilter]];
+  if (subj.type === "foundation"){
+    $("browseList").innerHTML = renderChapterAccordion(chaps, term);
+    if (typeof renderMathInElement === "function") renderMathInElement($("browseList"), KATEX_OPTIONS);
+    return;
+  }
+  let html = "";
+  chaps.forEach(c=>{
+    const items = c.items.filter(it =>
+      (!state.starredOnly || it.starred) &&
+      (!term || it.q.toLowerCase().includes(term) || it.a.toLowerCase().includes(term)));
+    if (!items.length) return;
+    const label = escapeHtml(c.title);
+    
+    // CHANGED HERE: We split the layout into multiple lines to wrap the items in marked.parse()
+    html += `<details class="chap" ${term||chaps.length===1?"open":""}>
+      <summary>${label} <span class="n">${items.length} Q</span></summary>
+      ${items.map(it => `
+        <div class="qa-item">
+          <div class="bq">${markdownWithLabel(it.q, "Q.")}</div>
+          <div class="ba">${markdownWithLabel(it.a, "A.")}</div>
+        </div>
+      `).join("")}
+    </details>`;
+  });
+  $("browseList").innerHTML = html || `<div class="empty-note">NO MATCHES ON THIS SHEET</div>`;
+  
+  if (typeof renderMathInElement === "function") {
+    renderMathInElement($("browseList"), KATEX_OPTIONS);
+  }
+}
+
+// ================= swipe gestures (study + quiz) =================
+// Study: swipe left = next card, swipe right = previous card.
+// Quiz: swipe before reveal = flip; after reveal, swipe left = Missed, swipe right = Got it.
+// The gesture itself is detected from start/end position only — the card does not
+// live-track the finger. On a successful swipe the card plays one directional
+// slide-out/slide-in transition instead.
+const SWIPE_THRESHOLD = 60;
+const SLIDE_MS = 180;
+let swipeState = { active:false, pid:null, startX:0, startY:0, curX:0, curY:0, fired:false };
+
+// Slides the current card out toward exitLeft's side, applies `updateFn` (which
+// re-renders #card with the new content), then slides the new content in from
+// the opposite side.
+function slideTransition(exitLeft, updateFn){
+  const card = $("card");
+  const exitX = exitLeft ? "-100%" : "100%";
+  const enterX = exitLeft ? "100%" : "-100%";
+  card.style.transition = `transform ${SLIDE_MS}ms ease, opacity ${SLIDE_MS}ms ease`;
+  card.style.transform = `translateX(${exitX})`;
+  card.style.opacity = "0";
+
+  card.addEventListener("transitionend", function onExitEnd(){
+    card.removeEventListener("transitionend", onExitEnd);
+    updateFn();
+    card.style.transition = "none";
+    card.style.transform = `translateX(${enterX})`;
+    void card.offsetWidth; // force reflow so the entry position is registered before animating
+    requestAnimationFrame(() => {
+      card.style.transition = `transform ${SLIDE_MS}ms ease, opacity ${SLIDE_MS}ms ease`;
+      card.style.transform = "translateX(0)";
+      card.style.opacity = "1";
+    });
+  }, { once: true });
+}
+
+function bindSwipe(){
+  const card = $("card");
+
+  card.addEventListener("pointerdown", e=>{
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    swipeState.active = true; swipeState.pid = e.pointerId; swipeState.fired = false;
+    swipeState.startX = swipeState.curX = e.clientX;
+    swipeState.startY = swipeState.curY = e.clientY;
+  });
+
+  card.addEventListener("pointermove", e=>{
+    if (!swipeState.active || e.pointerId !== swipeState.pid) return;
+    swipeState.curX = e.clientX; swipeState.curY = e.clientY;
+  });
+
+  function end(e){
+    if (!swipeState.active || e.pointerId !== swipeState.pid) return;
+    swipeState.active = false;
+    const dx = swipeState.curX - swipeState.startX, dy = swipeState.curY - swipeState.startY;
+    if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return;
+
+    const exitLeft = dx < 0;
+    if (state.mode === "study"){
+      const next = exitLeft ? state.pos + 1 : state.pos - 1;
+      if (next < 0 || next >= state.deck.length) return;
+      swipeState.fired = true;
+      slideTransition(exitLeft, () => move(exitLeft ? 1 : -1));
+    } else if (state.mode === "quiz"){
+      if (!state.revealed){ swipeState.fired = true; flip(); return; }
+      swipeState.fired = true;
+      slideTransition(exitLeft, () => grade(!exitLeft));
+    }
+  }
+
+  card.addEventListener("pointerup", end);
+  card.addEventListener("pointercancel", ()=>{ swipeState.active = false; });
+}
+
+// ================= interface bindings =================
+const dz = $("dropZone");
+dz.addEventListener("click", ()=> $("fileInput").click());
+dz.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();$("fileInput").click();} });
+["dragover","dragenter"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("dragover");}));
+["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("dragover");}));
+dz.addEventListener("drop", e=> loadFiles(e.dataTransfer.files, $("parseLog")));
+$("fileInput").addEventListener("change", e=>{ loadFiles(e.target.files, $("parseLog")); e.target.value=""; });
+// Folder button sits inside the click-to-open dropZone, so its own click must not also
+// bubble up and pop the plain file picker via dz's click listener above.
+$("folderBtn").addEventListener("click", e=>{ e.stopPropagation(); handleFolderImport($("parseLog")); });
+
+$("addMoreBtn").addEventListener("click", ()=> $("fileInput2").click());
+$("addFolderBtn").addEventListener("click", ()=> handleFolderImport($("miniLog")));
+$("fileInput2").addEventListener("change", e=>{ loadFiles(e.target.files, $("miniLog")); e.target.value=""; });
+
+$("subjectDDBtn").addEventListener("click", e=>{
+  e.stopPropagation();
+  $("subjectDD").classList.contains("open") ? closeSubjectDD() : openSubjectDD();
+});
+$("subjectDDBtn").addEventListener("keydown", e=>{
+  if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " "){
+    e.preventDefault(); openSubjectDD(); $("subjectDDList").focus();
+  }
+});
+$("subjectDDList").addEventListener("click", e=>{
+  const li = e.target.closest("li[data-idx]");
+  if (li) selectSubject(parseInt(li.dataset.idx,10));
+});
+$("subjectDDList").addEventListener("keydown", e=>{
+  const items = [...$("subjectDDList").querySelectorAll("li")];
+  if (!items.length) return;
+  const curIdx = items.findIndex(li=>li.classList.contains("active"));
+  if (e.key === "ArrowDown" || e.key === "ArrowUp"){
+    e.preventDefault();
+    const next = items[(curIdx + (e.key==="ArrowDown"?1:-1) + items.length) % items.length];
+    items.forEach(li=>li.classList.remove("active"));
+    next.classList.add("active");
+    next.scrollIntoView({ block:"nearest" });
+  } else if (e.key === "Enter" || e.key === " "){
+    e.preventDefault();
+    const active = items[curIdx >= 0 ? curIdx : 0];
+    selectSubject(parseInt(active.dataset.idx,10));
+  } else if (e.key === "Escape" || e.key === "Tab"){
+    closeSubjectDD();
+    if (e.key === "Escape"){ e.preventDefault(); $("subjectDDBtn").focus(); }
+  }
+});
+document.addEventListener("click", e=>{
+  if (!$("subjectDD").contains(e.target)) closeSubjectDD();
+  if (!$("settingsWrap").contains(e.target)) closeSettingsPanel();
+  if (!$("timerWrap").contains(e.target)) closeTimerPanel();
+  if (!$("tocDD").contains(e.target)) closeToc();
+});
+
+$("tocToggleBtn").addEventListener("click", e=>{
+  e.stopPropagation();
+  $("tocDD").classList.contains("open") ? closeToc() : openToc();
+});
+$("tocDD").addEventListener("keydown", e=>{
+  if (e.key === "Escape"){ closeToc(); $("tocToggleBtn").focus(); }
+});
+
+$("mStudy").onclick = ()=> setMode("study", true);
+$("mQuiz").onclick  = ()=> { state.reviewAllDue = false; setMode("quiz", true); };
+$("mBrowse").onclick= ()=> setMode("browse", false);
+$("typeFilterToggle").onclick = ()=> setTypeFilter(state.typeFilter === "foundation" ? "qa" : "foundation");
+$("starFilterBtn").onclick = ()=>{
+  state.starredOnly = !state.starredOnly;
+  state.reviewAllDue = false; // a narrower/different scope needs its own due-check
+  renderChips();
+  setMode(state.mode, true);
+};
+
+$("card").addEventListener("click", e=>{
+  if (swipeState.fired){ swipeState.fired = false; return; }
+  flip();
+});
+$("card").addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();flip();} });
+bindSwipe();
+$("themeToggle").addEventListener("click", toggleTheme);
+$("textSizeDec").addEventListener("click", ()=> stepBrowseScale(-BROWSE_SCALE_STEP));
+$("textSizeInc").addEventListener("click", ()=> stepBrowseScale(BROWSE_SCALE_STEP));
+$("timerToggleBtn").addEventListener("click", toggleTimer);
+$("timerResetBtn").addEventListener("click", resetTimer);
+$("tickSoundBtn").addEventListener("click", ()=>{
+  tickSoundEnabled = !tickSoundEnabled;
+  $("tickSoundBtn").classList.toggle("active", tickSoundEnabled);
+  $("tickSoundBtn").setAttribute("aria-pressed", String(tickSoundEnabled));
+  $("tickSoundBtn").textContent = (tickSoundEnabled ? "● " : "○ ") + "Tick sound (work only)";
+  // Web Audio only lets a context be created/resumed from a user gesture — this click is one,
+  // so warm it up now rather than waiting for the first in-timer tick to try and fail silently.
+  if (tickSoundEnabled) getTimerAudioCtx();
+});
+$("workMinDec").addEventListener("click", ()=> adjustWorkMin(-1));
+$("workMinInc").addEventListener("click", ()=> adjustWorkMin(1));
+$("breakMinDec").addEventListener("click", ()=> adjustBreakMin(-1));
+$("breakMinInc").addEventListener("click", ()=> adjustBreakMin(1));
+$("sessionGoalDec").addEventListener("click", ()=> adjustSessionGoal(-1));
+$("sessionGoalInc").addEventListener("click", ()=> adjustSessionGoal(1));
+$("readAloudToggleBtn").addEventListener("click", toggleReadAloud);
+$("readAloudStopBtn").addEventListener("click", stopReading);
+$("voiceSelect").addEventListener("change", async ()=>{
+  selectedVoiceName = $("voiceSelect").value;
+  await saveMeta("readAloudVoice", selectedVoiceName);
+});
+$("speedDec").addEventListener("click", ()=> stepSpeechRate(-READ_RATE_STEP));
+$("speedInc").addEventListener("click", ()=> stepSpeechRate(READ_RATE_STEP));
+$("timerBtn").addEventListener("click", e=>{
+  // Stop propagation so the document-level "click outside closes it" listener above doesn't
+  // immediately undo the open this same click just triggered (timerWrap sits outside settingsWrap
+  // and vice versa, so each is "outside" the other).
+  e.stopPropagation();
+  if ($("timerPanel").classList.contains("hidden")){
+    closeSettingsPanel(); // keep only one header popup open at a time
+    openTimerPanel();
+  } else {
+    closeTimerPanel();
+  }
+});
+$("timerWrap").addEventListener("keydown", e=>{
+  if (e.key === "Escape"){ closeTimerPanel(); $("timerBtn").focus(); }
+});
+$("flipBtn").onclick = flip;
+$("prevBtn").onclick = ()=> move(-1);
+$("nextBtn").onclick = ()=> move(1);
+$("fPrevBtn").onclick = ()=> stepFoundationChapter(-1);
+$("fNextBtn").onclick = ()=> stepFoundationChapter(1);
+$("starBtn").addEventListener("click", e=>{ e.stopPropagation(); toggleStar(); });
+$("starBtn").addEventListener("keydown", e=> e.stopPropagation());
+$("noteBtn").addEventListener("click", e=>{ e.stopPropagation(); openNotePanel(); });
+$("noteBtn").addEventListener("keydown", e=> e.stopPropagation());
+$("noteEditBtn").addEventListener("click", editNote);
+$("noteCloseBtn").addEventListener("click", closeNotePanel);
+$("noteSaveBtn").addEventListener("click", saveNote);
+$("noteCancelBtn").addEventListener("click", cancelNote);
+// Tapping outside the panel autosaves rather than discarding while editing, per spec — an
+// accidental tap-away shouldn't feel any different from hitting Save. In view mode there's
+// nothing pending, so it just closes.
+$("noteBackdrop").addEventListener("click", noteBackdropTap);
+$("notePanel").addEventListener("keydown", e=>{
+  e.stopPropagation();
+  if (e.key === "Escape") cancelNote();
+});
+$("missBtn").onclick = ()=> grade(false);
+$("passBtn").onclick = ()=> grade(true);
+$("retryMissedBtn").onclick = retryMissed;
+$("restartBtn").onclick = ()=> setMode("quiz", true);
+$("searchBox").addEventListener("input", renderBrowse);
+
+// ================= scroll to top =================
+// The app scrolls at the document/window level (no inner scroll container), so a plain
+// scrollY threshold is enough — shown once you've scrolled roughly past the header, which is
+// the point past which "jump back to top" actually saves meaningful distance.
+const TO_TOP_THRESHOLD = 400;
+function updateToTopVisibility(){
+  $("toTopBtn").classList.toggle("hidden", window.scrollY < TO_TOP_THRESHOLD);
+}
+window.addEventListener("scroll", updateToTopVisibility, { passive: true });
+// A PWA backgrounded and resumed (app-switch, screen lock) can come back already scrolled past
+// the threshold without ever firing a "scroll" event in between — visibilitychange/pageshow
+// catch that resume so the button doesn't stay stuck hidden until the next actual scroll.
+document.addEventListener("visibilitychange", () => { if (!document.hidden) updateToTopVisibility(); });
+window.addEventListener("pageshow", updateToTopVisibility);
+$("toTopBtn").onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
+// Keeps the Notes reading-progress bar/TOC live while scrolling — rAF-throttled since scroll
+// fires far more often than a layout read+write needs to happen.
+let foundationProgressRAF = null;
+function scheduleFoundationProgressUpdate(){
+  if (foundationProgressRAF) return;
+  foundationProgressRAF = requestAnimationFrame(() => { foundationProgressRAF = null; updateFoundationProgress(); });
+}
+window.addEventListener("scroll", scheduleFoundationProgressUpdate, { passive: true });
+window.addEventListener("resize", scheduleFoundationProgressUpdate);
+
+// Keeps --header-h in sync with the header's real rendered height (rather than a hardcoded
+// pixel value) so the sticky Notes progress bar (.notes-progress) pins directly beneath it —
+// header height isn't guaranteed constant across font-scale/zoom or content changes.
+const headerEl = document.querySelector("header");
+const syncHeaderHeightVar = () => document.documentElement.style.setProperty("--header-h", headerEl.offsetHeight + "px");
+if (typeof ResizeObserver === "function") new ResizeObserver(syncHeaderHeightVar).observe(headerEl);
+else { syncHeaderHeightVar(); window.addEventListener("resize", syncHeaderHeightVar); }
+
+document.addEventListener("keydown", e=>{
+  if (state.mode === "browse" || $("appView").classList.contains("hidden")) return;
+  if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT" || e.target.tagName === "TEXTAREA") return;
+  if ($("subjectDD").contains(e.target) || $("settingsWrap").contains(e.target) || $("notePanel").contains(e.target)) return;
+  if (e.key === "ArrowLeft" && state.mode==="study") move(-1);
+  else if (e.key === "ArrowRight" && state.mode==="study") move(1);
+  else if (e.key === "ArrowUp" || e.key === "ArrowDown"){ e.preventDefault(); flip(); }
+  else if (state.mode==="quiz" && state.revealed){
+    if (e.key === "1") grade(false);
+    if (e.key === "2") grade(true);
+  }
+});
+
+$("settingsBtn").addEventListener("click", e=>{
+  e.stopPropagation();
+  if ($("settingsPanel").classList.contains("hidden")){
+    closeTimerPanel(); // keep only one header popup open at a time
+    openSettingsPanel();
+  } else {
+    closeSettingsPanel();
+  }
+});
+$("settingsWrap").addEventListener("keydown", e=>{
+  if (e.key === "Escape"){ closeSettingsPanel(); $("settingsBtn").focus(); }
+});
+$("settingsDeckList").addEventListener("click", e=>{
+  const exportBtn = e.target.closest("[data-export-idx]");
+  if (exportBtn){ exportNotesFile(state.subjects[parseInt(exportBtn.dataset.exportIdx,10)]); return; }
+  const btn = e.target.closest(".settings-del");
+  if (btn) deleteDeck(parseInt(btn.dataset.idx,10));
+});
+$("shuffleAction").addEventListener("click", ()=>{
+  if (state.mode==="quiz") setMode("quiz", true);
+  else { buildDeck(true); renderCard(); }
+  closeSettingsPanel();
+});
+$("recheckAction").addEventListener("click", ()=> recheckFilesForUpdates($("recheckLog")));
+$("clearAllAction").addEventListener("click", async ()=>{
+  if (confirm("Are you sure you want to permanently delete all loaded decks from this browser?")){
+    closeSettingsPanel();
+    await clearAllDecks();
+  }
+});
+
+initTheme();
+initBrowseScale();
+initTimer();
+initReadAloud();
+
+// ================= PWA: service worker registration =================
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(err => {
+      console.error("Service worker registration failed:", err);
+    });
+  });
+}
+// EDIT HERE: Configure marked to ignore math blocks right before initializing the app
+if (typeof marked !== 'undefined') {
+  marked.use({
+    extensions: [{
+      name: 'inlineMath',
+      level: 'inline',
+      start(src) { return src.indexOf('$'); },
+      tokenizer(src) {
+        const match = src.match(/^\$([^$\n]+)\$/);
+        if (match) return { type: 'inlineMath', raw: match[0], text: match[0] };
+      },
+      renderer(token) { return token.text; }
+    }, {
+      name: 'blockMath',
+      level: 'block',
+      start(src) { return src.indexOf('$$'); },
+      tokenizer(src) {
+        const match = src.match(/^\$\$([\s\S]+?)\$\$/);
+        if (match) return { type: 'blockMath', raw: match[0], text: match[0] };
+      },
+      renderer(token) { return token.text; }
+    }]
+  });
+}
+
+// Applies the remembered Notes/Q&A choice (see setTypeFilter) once at startup, before the first
+// enterApp() runs — picks the first matching deck so the remembered preference actually decides
+// what's shown, rather than just whatever ended up first in the saved subjects array. Only runs
+// once at boot; during the session ensureValidTypeFilter()'s "follow the current subject" logic
+// takes over instead (so importing/deleting a deck still shows what you just acted on).
+async function restoreTypeFilterPreference(){
+  let saved = null;
+  try { saved = await loadMeta("typeFilter"); } catch(e){}
+  if (saved !== "qa" && saved !== "foundation") return; // no saved preference — "qa" default stands
+  state.typeFilter = saved;
+  const idx = state.subjects.findIndex(s => matchesTypeFilter(s, saved));
+  if (idx >= 0) state.subjectIdx = idx;
+}
+
+// Auto-load data out of browser storage upon load/refresh
+(async () => {
+  const savedDecks = await loadSubjectsFromDB();
+  if (savedDecks && savedDecks.length > 0) {
+    state.subjects = savedDecks;
+    if (prepareSubjects(state.subjects)) await saveSubjectsToDB(state.subjects);
+    state.chapterFilter = -1;
+    await restoreTypeFilterPreference();
+    enterApp();
+  }
+})();
+</script>
+</body>
+</html>
