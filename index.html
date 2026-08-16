@@ -736,6 +736,7 @@
             <button class="settings-action" id="shuffleAction" type="button">⤨ Shuffle current deck</button>
             <div class="settings-divider"></div>
             <button class="settings-action" id="recheckAction" type="button" title="Re-reads every deck that was loaded via folder import, to pick up edits made outside the app">⟳ Recheck files for updates</button>
+            <button class="settings-action" id="recheckCurrentAction" type="button" title="Re-reads only the currently open deck (its foundation notes, Q&amp;A, and notes file), to pick up edits made outside the app">⟳ Recheck current deck only</button>
             <div class="mini-log" id="recheckLog"></div>
             <div class="settings-divider"></div>
             <div class="settings-decklist" id="settingsDeckList"></div>
@@ -2502,15 +2503,25 @@ function exportNotesFile(subj){
 // pipeline as a fresh import, so parsing, star/note carry-forward, and sidecar-note merging
 // all behave identically. Decks loaded via the manual picker have no handle to re-read from
 // and are skipped; the user has to re-add those by hand if they've changed.
-async function recheckFilesForUpdates(logEl){
-  const handleSubjects = state.subjects.filter(s => s.noteDirHandle);
-  if (!handleSubjects.length){
-    logEl.innerHTML = `<div class="err">✕ No decks were imported via folder — use "+ add folder" so they can be rechecked.</div>`;
-    return;
-  }
+async function recheckFilesForUpdates(logEl, opts){
+  const currentOnly = !!(opts && opts.currentOnly);
   const curSubj = currentSubject();
   const currentName = curSubj ? curSubj.name : null;
   const currentIsFoundation = curSubj ? curSubj.type === "foundation" : false;
+  if (currentOnly && !curSubj){
+    logEl.innerHTML = `<div class="err">✕ No deck is currently open.</div>`;
+    return;
+  }
+  // Scoped recheck covers both halves of the open deck (foundation + Q&A share a display name)
+  // so its notes file, whichever half is on screen, gets picked up too.
+  let handleSubjects = state.subjects.filter(s => s.noteDirHandle);
+  if (currentOnly) handleSubjects = handleSubjects.filter(s => s.name === currentName);
+  if (!handleSubjects.length){
+    logEl.innerHTML = currentOnly
+      ? `<div class="err">✕ This deck wasn't imported via folder — use "+ add folder" so it can be rechecked.</div>`
+      : `<div class="err">✕ No decks were imported via folder — use "+ add folder" so they can be rechecked.</div>`;
+    return;
+  }
   logEl.innerHTML = `<div class="ok">Rechecking…</div>`;
   const seen = new Set();
   let combined = "";
@@ -2555,6 +2566,8 @@ function openSettingsPanel(){
   if (hasDecks){
     renderSettingsDeckList();
     $("recheckAction").disabled = !state.subjects.some(s => s.noteDirHandle);
+    const curSubj = currentSubject();
+    $("recheckCurrentAction").disabled = !(curSubj && curSubj.noteDirHandle);
     $("recheckLog").innerHTML = "";
   }
   renderReadAloud();
@@ -3434,6 +3447,7 @@ $("shuffleAction").addEventListener("click", ()=>{
   closeSettingsPanel();
 });
 $("recheckAction").addEventListener("click", ()=> recheckFilesForUpdates($("recheckLog")));
+$("recheckCurrentAction").addEventListener("click", ()=> recheckFilesForUpdates($("recheckLog"), { currentOnly: true }));
 $("clearAllAction").addEventListener("click", async ()=>{
   if (confirm("Are you sure you want to permanently delete all loaded decks from this browser?")){
     closeSettingsPanel();
