@@ -2138,6 +2138,7 @@ function parseTextToChapters(text, imageMap, relativePath, unresolvedLog){
 // and not worth reporting; the manual picker is an explicit per-file choice, so it keeps warning.
 async function loadFiles(fileList, logEl, opts){
   const silentSkip = !!(opts && opts.silentSkip);
+  const quietImageSummary = !!(opts && opts.quietImageSummary);
   const entries = normalizeFileEntries(fileList);
   logEl.innerHTML = "";
   let loadedAny = false;
@@ -2228,7 +2229,7 @@ async function loadFiles(fileList, logEl, opts){
     }
   }
 
-  if (imageEntries.length){
+  if (imageEntries.length && !quietImageSummary){
     logEl.innerHTML += `<div class="ok">${imageEntries.length} image${imageEntries.length===1?"":"s"} found and available for embeds</div>`;
   }
 
@@ -2523,6 +2524,12 @@ async function recheckFilesForUpdates(logEl, opts){
     return;
   }
   logEl.innerHTML = `<div class="ok">Rechecking…</div>`;
+  // A folder import commonly holds every deck as sibling files in one flat vault, all sharing
+  // the same noteDirHandle — so a scoped recheck can't just rescan the whole handle like the
+  // full recheck does, or it drags in every other deck living in that same folder too. Instead
+  // pin down exactly which filenames belong to the open deck and filter the (still folder-wide)
+  // scan down to those, keeping every image around so embeds still resolve.
+  const targetNames = currentOnly ? new Set(handleSubjects.map(s => s.sourceFileName)) : null;
   const seen = new Set();
   let combined = "";
   for (const subj of handleSubjects){
@@ -2533,8 +2540,11 @@ async function recheckFilesForUpdates(logEl, opts){
       if (!(await ensureReadPermission(subj.noteDirHandle))){
         tempLog.innerHTML = `<div class="err">✕ Permission denied for a folder — could not recheck it.</div>`;
       } else {
-        const entries = await collectFilesFromDirHandle(subj.noteDirHandle);
-        await loadFiles(entries, tempLog, { silentSkip: true });
+        let entries = await collectFilesFromDirHandle(subj.noteDirHandle);
+        if (targetNames) entries = entries.filter(e => IMAGE_RE.test(e.file.name) || targetNames.has(e.file.name));
+        // Those images are pulled in from the whole shared folder just so embeds still resolve —
+        // reporting "N images found" would misleadingly suggest they all belong to this one deck.
+        await loadFiles(entries, tempLog, { silentSkip: true, quietImageSummary: currentOnly });
       }
     } catch (e) {
       tempLog.innerHTML += `<div class="err">✕ Could not recheck a folder — ${escapeHtml(e && e.message || "unknown error")}</div>`;
@@ -2567,7 +2577,11 @@ function openSettingsPanel(){
     renderSettingsDeckList();
     $("recheckAction").disabled = !state.subjects.some(s => s.noteDirHandle);
     const curSubj = currentSubject();
-    $("recheckCurrentAction").disabled = !(curSubj && curSubj.noteDirHandle);
+    // Foundation-type subjects never carry their own noteDirHandle (only Q&A subjects do —
+    // see loadFiles()), so checking curSubj alone would leave this disabled whenever a notes
+    // deck is on screen even though its paired Q&A deck of the same name has the handle that
+    // recheckFilesForUpdates(currentOnly) actually uses.
+    $("recheckCurrentAction").disabled = !(curSubj && state.subjects.some(s => s.name === curSubj.name && s.noteDirHandle));
     $("recheckLog").innerHTML = "";
   }
   renderReadAloud();
