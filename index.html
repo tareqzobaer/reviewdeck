@@ -2187,7 +2187,10 @@ async function loadFiles(fileList, logEl, opts){
       const existing = state.subjects.findIndex(s => s.name===name && (s.type === "foundation") === isFoundation);
       let subj;
       if (isFoundation){
-        subj = { name, type: "foundation", chapters, sourceFileName: file.name };
+        // noteDirHandle is carried here too (not just for Q&A subjects below) so a
+        // foundation-only deck — one with no paired Q&A file — is still eligible for
+        // "Recheck files for updates" instead of being silently invisible to it.
+        subj = { name, type: "foundation", chapters, noteDirHandle: dirHandle || null, sourceFileName: file.name };
       } else {
         // Carry stars/notes/review-progress forward from whatever copy of this deck is already
         // loaded, so re-importing (the normal way to pick up source-file edits) doesn't wipe them.
@@ -2529,7 +2532,12 @@ async function recheckFilesForUpdates(logEl, opts){
   // full recheck does, or it drags in every other deck living in that same folder too. Instead
   // pin down exactly which filenames belong to the open deck and filter the (still folder-wide)
   // scan down to those, keeping every image around so embeds still resolve.
-  const targetNames = currentOnly ? new Set(handleSubjects.map(s => s.sourceFileName)) : null;
+  // Built from ALL name-matching subjects, not just handleSubjects: foundation-type subjects
+  // never carry their own noteDirHandle (see loadFiles()), so handleSubjects alone would always
+  // miss the foundation half's filename — silently skipping it on every scoped recheck.
+  const targetNames = currentOnly
+    ? new Set(state.subjects.filter(s => s.name === currentName).map(s => s.sourceFileName).filter(Boolean))
+    : null;
   const seen = new Set();
   let combined = "";
   for (const subj of handleSubjects){
