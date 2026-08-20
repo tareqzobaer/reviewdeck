@@ -1559,13 +1559,26 @@ function chapName(title){
 const IMAGE_RE = /\.(png|jpe?g|gif|webp|svg)$/i;
 const DOC_RE = /\.(docx|md|markdown|txt)$/i;
 const AMBIGUOUS = Symbol("ambiguous-image-name");
+const IMAGE_MIME_BY_EXT = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif", webp: "image/webp", svg: "image/svg+xml" };
+
+function mimeForImageName(name){
+  const m = /\.([a-z0-9]+)$/i.exec(name);
+  return (m && IMAGE_MIME_BY_EXT[m[1].toLowerCase()]) || "";
+}
 
 function readAsDataUrl(file){
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
     reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
+    // Some filesystems/OSes hand the browser an empty or wrong File.type for an image (more
+    // often for recently-added files the OS hasn't fully indexed) — FileReader bakes that MIME
+    // straight into the data URL, and an <img> with a data URL missing a proper image/* MIME
+    // just silently fails to render, with no error anywhere. Force it from the extension instead
+    // of trusting file.type. Blob.slice's 3rd arg overrides the type without recopying the bytes.
+    const mime = mimeForImageName(file.name);
+    const blob = (mime && file.type !== mime) ? file.slice(0, file.size, mime) : file;
+    reader.readAsDataURL(blob);
   });
 }
 
@@ -1648,6 +1661,11 @@ async function buildImageMap(imageEntries){
   const byName = new Map();
   const byNamePaths = new Map();
   for (const { file, relativePath } of imageEntries){
+    // A 0-byte file (a cloud-sync placeholder that hasn't downloaded yet, most often) would
+    // otherwise resolve "successfully" to a blank data URL that silently fails to render with
+    // no warning anywhere — leaving it out of the map instead makes resolveImageRef report it
+    // as a normal "not found", which at least surfaces the problem.
+    if (!file.size) continue;
     const dataUrl = await readAsDataUrl(file);
     byPath.set(relativePath.toLowerCase(), dataUrl);
 
