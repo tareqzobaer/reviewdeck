@@ -188,6 +188,12 @@
     box-shadow:3px 3px 0 var(--shadow);cursor:pointer;transition:background .15s;
   }
   .to-top:hover{background:var(--hoverbg)}
+  /* Stacked directly above #toTopBtn (same corner, same size/border/shadow — see .to-top above)
+     so pausing auto-scroll is one tap away without opening Settings. Visibility tracks
+     autoScrollActive, not scroll position, so it can appear before #toTopBtn's own threshold. */
+  .scroll-pause-fab{
+    bottom:calc(16px + 42px + 8px + env(safe-area-inset-bottom));
+  }
 
   /* ---------- import / empty state ---------- */
   .drop{
@@ -583,7 +589,29 @@
     border:1.4px solid var(--ink);background:var(--card);color:var(--ink);
     font-family:var(--mono);font-size:12px;cursor:pointer;
   }
-  #readAloudSection .settings-textsize{margin-bottom:10px}
+  /* One row for speed (−/value/+) and playback (icon-only Play/Start + Stop) together, instead
+     of stacking speed and playback on separate rows — the icon buttons stay the same fixed
+     34px width as −/+ (see .settings-step above) so five controls fit one narrow settings-panel
+     row without crowding or wrapping. */
+  .settings-controls-row{display:flex;align-items:center;gap:6px}
+  #readAloudSection .settings-controls-row .settings-textsize-val{flex:1;min-width:0}
+  .settings-icon-btn{display:inline-flex;align-items:center;justify-content:center}
+
+  /* ---------- auto-scroll speed slider ---------- */
+  .speed-slider{
+    flex:1;min-width:0;height:4px;appearance:none;-webkit-appearance:none;
+    background:var(--line);cursor:pointer;
+  }
+  .speed-slider::-webkit-slider-thumb{
+    appearance:none;-webkit-appearance:none;
+    width:15px;height:15px;border-radius:0;
+    background:var(--teal);border:1.4px solid var(--ink);cursor:pointer;
+  }
+  .speed-slider::-moz-range-thumb{
+    width:15px;height:15px;border-radius:0;
+    background:var(--teal);border:1.4px solid var(--ink);cursor:pointer;
+  }
+  .speed-slider::-moz-range-track{height:4px;background:var(--line)}
 
   /* ---------- quiz results ---------- */
   .result{background:var(--card);border:1.6px solid var(--ink);box-shadow:4px 4px 0 var(--shadow);padding:26px 20px;text-align:center}
@@ -721,14 +749,21 @@
           <div class="settings-section hidden" id="readAloudSection">
             <div class="settings-label">Read notes aloud</div>
             <select class="voice-select" id="voiceSelect" aria-label="Voice"></select>
-            <div class="settings-textsize">
+            <div class="settings-controls-row">
               <button class="settings-step" id="speedDec" type="button" aria-label="Decrease read-aloud speed">−</button>
               <span class="settings-textsize-val" id="speedVal">1x</span>
               <button class="settings-step" id="speedInc" type="button" aria-label="Increase read-aloud speed">+</button>
+              <button class="settings-step settings-icon-btn" id="readAloudToggleBtn" type="button" title="Play" aria-label="Play"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></button>
+              <button class="settings-step settings-icon-btn" id="readAloudStopBtn" type="button" disabled title="Stop" aria-label="Stop"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12"></rect></svg></button>
             </div>
-            <div class="timer-actions">
-              <button class="settings-step" id="readAloudToggleBtn" type="button">▶ Play</button>
-              <button class="settings-step" id="readAloudStopBtn" type="button" disabled>■ Stop</button>
+          </div>
+          <div class="settings-divider hidden" id="autoScrollDivider"></div>
+          <div class="settings-section hidden" id="autoScrollSection">
+            <div class="settings-label">Auto-scroll</div>
+            <div class="settings-controls-row">
+              <input type="range" class="speed-slider" id="autoScrollSpeedSlider" min="0.25" max="2" step="0.02" value="0.5" aria-label="Auto-scroll speed">
+              <span class="settings-textsize-val" id="autoScrollSpeedVal">0.5x</span>
+              <button class="settings-step settings-icon-btn" id="autoScrollToggleBtn" type="button" title="Start" aria-label="Start"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></button>
             </div>
           </div>
           <div id="deckManageSection" class="hidden">
@@ -736,7 +771,6 @@
             <button class="settings-action" id="shuffleAction" type="button">⤨ Shuffle current deck</button>
             <div class="settings-divider"></div>
             <button class="settings-action" id="recheckAction" type="button" title="Re-reads every deck that was loaded via folder import, to pick up edits made outside the app">⟳ Recheck files for updates</button>
-            <button class="settings-action" id="recheckCurrentAction" type="button" title="Re-reads only the currently open deck (its foundation notes, Q&amp;A, and notes file), to pick up edits made outside the app">⟳ Recheck current deck only</button>
             <div class="mini-log" id="recheckLog"></div>
             <div class="settings-divider"></div>
             <div class="settings-decklist" id="settingsDeckList"></div>
@@ -909,6 +943,7 @@
 
 </div>
 
+<button class="to-top scroll-pause-fab hidden" id="autoScrollFab" type="button" aria-label="Start auto-scroll" title="Start"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></button>
 <button class="to-top hidden" id="toTopBtn" type="button" aria-label="Scroll to top" title="Scroll to top">
   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"></polyline></svg>
 </button>
@@ -945,11 +980,12 @@ const $ = id => document.getElementById(id);
 const DB_NAME = "QAReviewDeckDB";
 const STORE_NAME = "subjectsStore"; // legacy per-subject store — see loadSubjectsFromDB()
 const META_STORE = "metaStore";
+const IMAGE_CACHE_STORE = "imageCacheStore"; // see resolveNeededImages() below
 const SUBJECTS_META_KEY = "__subjects__";
 
 function initDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 2);
+    const request = indexedDB.open(DB_NAME, 3);
     request.onupgradeneeded = e => {
       const db = e.target.result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
@@ -958,9 +994,35 @@ function initDB() {
       if (!db.objectStoreNames.contains(META_STORE)) {
         db.createObjectStore(META_STORE, { keyPath: "key" });
       }
+      if (!db.objectStoreNames.contains(IMAGE_CACHE_STORE)) {
+        db.createObjectStore(IMAGE_CACHE_STORE, { keyPath: "key" });
+      }
     };
     request.onsuccess = e => resolve(e.target.result);
     request.onerror = e => reject(e.target.error);
+  });
+}
+
+// Encoded-image cache, keyed by relativePath.toLowerCase(). A cache hit is only trusted when
+// the stored size/lastModified still match the current File — any edit to the source image
+// changes at least one of those, so a stale entry can never be served as if it were current.
+// This is what makes "Recheck files for updates" fast on a second pass: unchanged images skip
+// FileReader entirely instead of being re-encoded to base64 every time.
+async function getCachedImage(db, key) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(IMAGE_CACHE_STORE, "readonly");
+    const request = tx.objectStore(IMAGE_CACHE_STORE).get(key);
+    request.onsuccess = () => resolve(request.result || null);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function putCachedImage(db, key, record) {
+  return new Promise(resolve => {
+    const tx = db.transaction(IMAGE_CACHE_STORE, "readwrite");
+    tx.objectStore(IMAGE_CACHE_STORE).put({ key, ...record });
+    tx.oncomplete = resolve;
+    tx.onerror = resolve; // a failed cache write just means the next load re-encodes — not fatal
   });
 }
 
@@ -1295,12 +1357,32 @@ function closeTimerPanel(){
   $("timerBtn").setAttribute("aria-expanded", "false");
 }
 
+// ================= shared play/pause/stop icons =================
+// Solid-fill glyphs (not the app's usual stroked line-icon style — see toTopBtn/theme toggle/
+// settings gear) since that's the near-universal convention for media transport controls, and
+// reads more clearly at this size than an outline would. Shared between read-aloud and
+// auto-scroll's toggle buttons (and the floating auto-scroll fab), swapped in via innerHTML
+// since which one shows depends on live playback state.
+const ICON_PLAY = '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+const ICON_PAUSE = '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>';
+const ICON_STOP = '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12"/></svg>';
+
 // ================= read notes aloud (Web Speech API) =================
 // Foundation ("Notes") decks only — Q&A content is short flashcard prose where "read the
 // current selection aloud" doesn't map onto anything as cleanly as it does for a chapter of
 // prose, so the control (in Settings) only appears while viewing a foundation deck. Uses the
 // browser's built-in speech synthesis — no external service, so this keeps working fully
 // offline like the rest of the app, same as the timer's chime.
+// Strips $$...$$ and $...$ math spans out of raw markdown before it's read aloud — spoken
+// literally (dollar signs, carets, backslashes and all) a LaTeX equation is just noise, not
+// useful speech, so it's dropped rather than converted to any spoken form. $$...$$ is removed
+// first since it's allowed to span multiple lines; $...$ is then matched only within a single
+// line (real inline math is never written across a paragraph break) so one stray currency "$"
+// can't accidentally pair up with an unrelated "$" many paragraphs later.
+function stripMathForSpeech(text){
+  return text.replace(/\$\$[\s\S]*?\$\$/g, " ").replace(/\$[^$\n]*?\$/g, " ");
+}
+
 function getReadableChapters(){
   const subj = currentSubject();
   if (!subj || subj.type !== "foundation") return [];
@@ -1309,7 +1391,7 @@ function getReadableChapters(){
   // HTML down to plain readable text, rather than writing a second, parallel stripping regex.
   const scratch = document.createElement("div");
   return chaps.map(c => {
-    let html = renderMarkdown(c.content);
+    let html = renderMarkdown(stripMathForSpeech(c.content));
     // A callout's icon glyph (e.g. "✎") shouldn't be read aloud literally, and adjacent block
     // elements with no whitespace between them in the markup (e.g. a callout's title div
     // butting directly against its content div) would otherwise have their text run together
@@ -1386,7 +1468,10 @@ function renderReadAloud(){
   $("readAloudDivider").classList.toggle("hidden", !applicable);
   if (!applicable) return;
   const speaking = speechSynthesis.speaking && !speechSynthesis.paused;
-  $("readAloudToggleBtn").textContent = speaking ? "‖ Pause" : (speechSynthesis.paused ? "▶ Resume" : "▶ Play");
+  const label = speaking ? "Pause" : (speechSynthesis.paused ? "Resume" : "Play");
+  $("readAloudToggleBtn").innerHTML = speaking ? ICON_PAUSE : ICON_PLAY;
+  $("readAloudToggleBtn").title = label;
+  $("readAloudToggleBtn").setAttribute("aria-label", label);
   $("readAloudStopBtn").disabled = !speechSynthesis.speaking;
 }
 
@@ -1461,6 +1546,117 @@ function toggleReadAloud(){
   else if (speechSynthesis.paused) speechSynthesis.resume();
   else startReading();
   renderReadAloud();
+}
+
+// ================= auto-scroll (Notes) =================
+// Same "Foundation decks only" scope as read-aloud above, and lives right below it in Settings
+// so both reading aids sit together. Drives window.scrollY directly with requestAnimationFrame
+// (foundation content scrolls the page itself, not an inner container — see
+// updateFoundationProgress() above) rather than a setInterval tick, so speed changes and
+// pause/resume take effect on the very next frame instead of waiting out a stale interval.
+const AUTOSCROLL_SPEED_MIN = 0.25, AUTOSCROLL_SPEED_MAX = 2, AUTOSCROLL_SPEED_STEP = 0.02;
+const AUTOSCROLL_BASE_PX_PER_SEC = 40; // px/sec at 1x
+let autoScrollSpeed = 0.5;
+let autoScrollActive = false; // true from Start until Stop (survives a pause)
+let autoScrollPaused = false;
+let autoScrollRafId = null;
+let autoScrollLastTs = null;
+let autoScrollCarry = 0; // fractional pixels not yet applied — see autoScrollStep()
+
+function applyAutoScrollSpeed(speed){
+  autoScrollSpeed = Math.round(Math.min(AUTOSCROLL_SPEED_MAX, Math.max(AUTOSCROLL_SPEED_MIN, speed)) * 100) / 100;
+  $("autoScrollSpeedVal").textContent = autoScrollSpeed.toFixed(2).replace(/0+$/,"").replace(/\.$/,"") + "x";
+  $("autoScrollSpeedSlider").value = autoScrollSpeed;
+}
+
+async function initAutoScrollSpeed(){
+  let saved = null;
+  try { saved = await loadMeta("autoScrollSpeed"); } catch(e){}
+  applyAutoScrollSpeed(typeof saved === "number" ? saved : 0.5);
+}
+
+async function setAutoScrollSpeed(speed){
+  applyAutoScrollSpeed(speed);
+  await saveMeta("autoScrollSpeed", autoScrollSpeed);
+}
+
+// At low speeds a single frame's move can be under 1px (e.g. 1x is ~0.67px/frame at 60fps) —
+// window.scrollBy(0, <1px) gets silently dropped by the browser (scroll position is an integer
+// pixel), so accumulating via repeated scrollBy(0, <1px) calls never actually moves at all below
+// a certain speed. autoScrollCarry banks that leftover fraction instead of discarding it: each
+// frame only the whole-pixel part of (this frame's move + whatever's carried over) is actually
+// applied via scrollBy, and the new fraction is carried into the next frame — so progress still
+// accumulates and eventually crosses a whole-pixel boundary. Deliberately relative (scrollBy),
+// not an absolute scrollTo(target) — that would re-assert its own tracked position every frame
+// and fight a manual scroll the user makes mid-autoscroll instead of just continuing from it.
+function autoScrollStep(ts){
+  if (autoScrollLastTs === null){
+    autoScrollLastTs = ts;
+    autoScrollCarry = 0;
+  }
+  const dt = (ts - autoScrollLastTs) / 1000;
+  autoScrollLastTs = ts;
+  const wanted = AUTOSCROLL_BASE_PX_PER_SEC * autoScrollSpeed * dt + autoScrollCarry;
+  const whole = Math.trunc(wanted);
+  autoScrollCarry = wanted - whole;
+  if (whole !== 0) window.scrollBy(0, whole);
+  const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 1;
+  if (atBottom){ stopAutoScroll(); return; }
+  autoScrollRafId = requestAnimationFrame(autoScrollStep);
+}
+
+// Also used to resume from a pause — resetting autoScrollLastTs to null means the next frame
+// re-anchors dt and clears the carried-over fraction, instead of dt being inflated by however
+// long the scroll sat paused.
+function startAutoScroll(){
+  autoScrollActive = true;
+  autoScrollPaused = false;
+  autoScrollLastTs = null;
+  if (autoScrollRafId) cancelAnimationFrame(autoScrollRafId);
+  autoScrollRafId = requestAnimationFrame(autoScrollStep);
+  renderAutoScroll();
+}
+
+function pauseAutoScroll(){
+  autoScrollPaused = true;
+  if (autoScrollRafId) cancelAnimationFrame(autoScrollRafId);
+  autoScrollRafId = null;
+  renderAutoScroll();
+}
+
+function stopAutoScroll(){
+  autoScrollActive = false;
+  autoScrollPaused = false;
+  if (autoScrollRafId) cancelAnimationFrame(autoScrollRafId);
+  autoScrollRafId = null;
+  renderAutoScroll();
+}
+
+function toggleAutoScroll(){
+  if (autoScrollActive && !autoScrollPaused) pauseAutoScroll();
+  else startAutoScroll(); // handles both a fresh start and resuming from pause
+}
+
+function renderAutoScroll(){
+  const subj = currentSubject();
+  const applicable = !!(subj && subj.type === "foundation");
+  $("autoScrollSection").classList.toggle("hidden", !applicable);
+  $("autoScrollDivider").classList.toggle("hidden", !applicable);
+  // The floating pause/play button (see #autoScrollFab, mirrors #toTopBtn's style) is a quick-
+  // access control for whenever auto-scroll has been started, independent of whether Settings
+  // is even open — so its own visibility gates on autoScrollActive directly rather than on
+  // whatever renderAutoScroll()'s early return below does for the (Settings-only) section.
+  $("autoScrollFab").classList.toggle("hidden", !(applicable && autoScrollActive));
+  if (!applicable) return;
+  const scrolling = autoScrollActive && !autoScrollPaused;
+  const label = scrolling ? "Pause" : (autoScrollPaused ? "Resume" : "Start");
+  const icon = scrolling ? ICON_PAUSE : ICON_PLAY;
+  $("autoScrollToggleBtn").innerHTML = icon;
+  $("autoScrollToggleBtn").title = label;
+  $("autoScrollToggleBtn").setAttribute("aria-label", label);
+  $("autoScrollFab").innerHTML = icon;
+  $("autoScrollFab").title = label;
+  $("autoScrollFab").setAttribute("aria-label", label + " auto-scroll");
 }
 
 function escapeHtml(s){
@@ -1559,26 +1755,13 @@ function chapName(title){
 const IMAGE_RE = /\.(png|jpe?g|gif|webp|svg)$/i;
 const DOC_RE = /\.(docx|md|markdown|txt)$/i;
 const AMBIGUOUS = Symbol("ambiguous-image-name");
-const IMAGE_MIME_BY_EXT = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif", webp: "image/webp", svg: "image/svg+xml" };
-
-function mimeForImageName(name){
-  const m = /\.([a-z0-9]+)$/i.exec(name);
-  return (m && IMAGE_MIME_BY_EXT[m[1].toLowerCase()]) || "";
-}
 
 function readAsDataUrl(file){
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
     reader.onerror = () => reject(reader.error);
-    // Some filesystems/OSes hand the browser an empty or wrong File.type for an image (more
-    // often for recently-added files the OS hasn't fully indexed) — FileReader bakes that MIME
-    // straight into the data URL, and an <img> with a data URL missing a proper image/* MIME
-    // just silently fails to render, with no error anywhere. Force it from the extension instead
-    // of trusting file.type. Blob.slice's 3rd arg overrides the type without recopying the bytes.
-    const mime = mimeForImageName(file.name);
-    const blob = (mime && file.type !== mime) ? file.slice(0, file.size, mime) : file;
-    reader.readAsDataURL(blob);
+    reader.readAsDataURL(file);
   });
 }
 
@@ -1653,33 +1836,50 @@ async function handleFolderImport(logEl){
   await loadFiles(entries, logEl, { silentSkip: true });
 }
 
-// Builds a lookup keyed both by relative path and by bare filename. Same filename in two
-// different folders with different content is flagged AMBIGUOUS rather than guessed at \u2014
-// resolveImageRef surfaces that as a warning instead of silently picking the wrong image.
-async function buildImageMap(imageEntries){
+// Builds a lookup keyed both by relative path and by bare filename \u2014 no file content is read
+// here, just File objects indexed by name/path, so this is cheap even for a huge attachments/
+// folder. Actual encoding is deferred to resolveNeededImages(), and only for images a loaded
+// note turns out to reference (see resolveImageRef()). Same filename in two different folders
+// is flagged AMBIGUOUS by comparing (size, lastModified) rather than content \u2014 reading content
+// to compare would defeat the point of deferring the read \u2014 resolveImageRef surfaces that as a
+// warning instead of silently picking the wrong image.
+function buildImageMap(imageEntries){
   const byPath = new Map();
   const byName = new Map();
   const byNamePaths = new Map();
   for (const { file, relativePath } of imageEntries){
-    // A 0-byte file (a cloud-sync placeholder that hasn't downloaded yet, most often) would
-    // otherwise resolve "successfully" to a blank data URL that silently fails to render with
-    // no warning anywhere — leaving it out of the map instead makes resolveImageRef report it
-    // as a normal "not found", which at least surfaces the problem.
-    if (!file.size) continue;
-    const dataUrl = await readAsDataUrl(file);
-    byPath.set(relativePath.toLowerCase(), dataUrl);
+    const entry = { file, relativePath };
+    byPath.set(relativePath.toLowerCase(), entry);
 
     const base = file.name.toLowerCase();
     if (!byNamePaths.has(base)) byNamePaths.set(base, new Set());
     byNamePaths.get(base).add(relativePath);
 
     if (byName.has(base)){
-      if (byName.get(base) !== dataUrl) byName.set(base, AMBIGUOUS);
+      const existing = byName.get(base);
+      if (existing !== AMBIGUOUS && (existing.file.size !== file.size || existing.file.lastModified !== file.lastModified)){
+        byName.set(base, AMBIGUOUS);
+      }
     } else {
-      byName.set(base, dataUrl);
+      byName.set(base, entry);
     }
   }
-  return { byPath, byName, byNamePaths };
+  return { byPath, byName, byNamePaths, needed: new Map() };
+}
+
+// A resolved image ref is swapped in as this placeholder token (embedded straight into the
+// <img src="..."> markup by resolveImagesInText) rather than the real data URL, and the actual
+// File it points to is registered in imageMap.needed keyed by its relativePath - deduped, so
+// the same image referenced from several cards only gets encoded once. Once every note in this
+// loadFiles() batch has been parsed, resolveNeededImages() encodes exactly that needed set (via
+// the IndexedDB cache) and substituteImagePlaceholders() swaps the tokens for real data URLs.
+// NUL-delimited (built via fromCharCode, not a string escape) so it can never collide with
+// real note text.
+const IMG_TOKEN_MARK = String.fromCharCode(0);
+function registerNeededImage(imageMap, entry){
+  const key = entry.relativePath.toLowerCase();
+  if (!imageMap.needed.has(key)) imageMap.needed.set(key, entry);
+  return IMG_TOKEN_MARK + "IMG:" + key + IMG_TOKEN_MARK;
 }
 
 // Joins a reference path against the referencing file's own folder, resolving ".." segments.
@@ -1706,9 +1906,9 @@ function resolveImageRef(ref, imageMap, referencingRelPath, unresolvedLog){
 
   if (dir){
     const joined = resolveRelativePath(dir, norm).toLowerCase();
-    if (imageMap.byPath.has(joined)) return imageMap.byPath.get(joined);
+    if (imageMap.byPath.has(joined)) return registerNeededImage(imageMap, imageMap.byPath.get(joined));
   }
-  if (imageMap.byPath.has(norm.toLowerCase())) return imageMap.byPath.get(norm.toLowerCase());
+  if (imageMap.byPath.has(norm.toLowerCase())) return registerNeededImage(imageMap, imageMap.byPath.get(norm.toLowerCase()));
 
   const base = norm.slice(norm.lastIndexOf("/") + 1).toLowerCase();
   const hit = imageMap.byName.get(base);
@@ -1717,10 +1917,48 @@ function resolveImageRef(ref, imageMap, referencingRelPath, unresolvedLog){
     if (unresolvedLog) unresolvedLog.push(`"${ref}" is ambiguous (found in: ${paths.join(", ")})`);
     return ref;
   }
-  if (hit) return hit;
+  if (hit) return registerNeededImage(imageMap, hit);
 
   if (unresolvedLog) unresolvedLog.push(`"${ref}" not found`);
   return ref;
+}
+
+// Encodes exactly the images this loadFiles() batch's notes actually referenced (imageMap.needed,
+// populated by registerNeededImage() during parsing) - checking the IndexedDB cache first so an
+// unchanged image is never re-read through FileReader. Returns key -> data URL, consumed by
+// substituteImagePlaceholders() to swap the placeholder tokens for real <img src> values.
+async function resolveNeededImages(needed){
+  const resolved = new Map();
+  if (!needed.size) return resolved;
+  const db = await initDB();
+  for (const [key, { file }] of needed){
+    const cached = await getCachedImage(db, key);
+    if (cached && cached.size === file.size && cached.lastModified === file.lastModified){
+      resolved.set(key, cached.dataUrl);
+      continue;
+    }
+    const dataUrl = await readAsDataUrl(file);
+    resolved.set(key, dataUrl);
+    await putCachedImage(db, key, { size: file.size, lastModified: file.lastModified, dataUrl });
+  }
+  return resolved;
+}
+
+const IMG_TOKEN_RE = new RegExp(IMG_TOKEN_MARK + "IMG:([^" + IMG_TOKEN_MARK + "]*)" + IMG_TOKEN_MARK, "g");
+
+// Swaps registerNeededImage()'s placeholder tokens (already embedded in parsed chapter/item
+// text by resolveImagesInText, before the batch's images were actually encoded) for the real
+// data URLs resolveNeededImages() just produced.
+function substituteImagePlaceholders(chapters, isFoundation, resolved){
+  const sub = text => text.replace(IMG_TOKEN_RE, (m, key) => resolved.get(key) || "");
+  if (isFoundation){
+    chapters.forEach(c => { c.content = sub(c.content); });
+  } else {
+    chapters.forEach(c => c.items.forEach(it => {
+      it.q = sub(it.q);
+      it.a = sub(it.a);
+    }));
+  }
 }
 
 // ================= card notes (sidecar file) =================
@@ -2058,7 +2296,7 @@ function parseHtmlToChapters(html){
 // unresolvedLog are optional — callers that don't care about image resolution (or have no
 // images available) can omit them and refs pass through unresolved.
 function resolveImagesInText(text, imageMap, relativePath, unresolvedLog){
-  const images = imageMap || { byPath: new Map(), byName: new Map(), byNamePaths: new Map() };
+  const images = imageMap || { byPath: new Map(), byName: new Map(), byNamePaths: new Map(), needed: new Map() };
 
   // Obsidian embed: ![[filename.png]] or ![[filename.png|caption]]. Only "![[...]]" (with the
   // leading "!") is an embed — bare "[[note link]]" is Obsidian's internal note-link syntax,
@@ -2156,10 +2394,12 @@ function parseTextToChapters(text, imageMap, relativePath, unresolvedLog){
 // and not worth reporting; the manual picker is an explicit per-file choice, so it keeps warning.
 async function loadFiles(fileList, logEl, opts){
   const silentSkip = !!(opts && opts.silentSkip);
-  const quietImageSummary = !!(opts && opts.quietImageSummary);
   const entries = normalizeFileEntries(fileList);
   logEl.innerHTML = "";
   let loadedAny = false;
+  const pendingChapterSets = []; // {chapters, isFoundation} for each subj loaded this batch,
+                                  // substituted with real image data URLs once the loop below
+                                  // finishes and resolveNeededImages() has encoded them
 
   const imageEntries = entries.filter(({file}) => IMAGE_RE.test(file.name));
   const imageMap = await buildImageMap(imageEntries);
@@ -2205,10 +2445,7 @@ async function loadFiles(fileList, logEl, opts){
       const existing = state.subjects.findIndex(s => s.name===name && (s.type === "foundation") === isFoundation);
       let subj;
       if (isFoundation){
-        // noteDirHandle is carried here too (not just for Q&A subjects below) so a
-        // foundation-only deck — one with no paired Q&A file — is still eligible for
-        // "Recheck files for updates" instead of being silently invisible to it.
-        subj = { name, type: "foundation", chapters, noteDirHandle: dirHandle || null, sourceFileName: file.name };
+        subj = { name, type: "foundation", chapters, sourceFileName: file.name };
       } else {
         // Carry stars/notes/review-progress forward from whatever copy of this deck is already
         // loaded, so re-importing (the normal way to pick up source-file edits) doesn't wipe them.
@@ -2238,6 +2475,7 @@ async function loadFiles(fileList, logEl, opts){
       }
       if (existing >= 0){ state.subjects[existing] = subj; state.subjectIdx = existing; }
       else { state.subjects.push(subj); state.subjectIdx = state.subjects.length - 1; }
+      pendingChapterSets.push({ chapters, isFoundation });
       rememberCurrentSubject();
       loadedAny = true;
       const summary = isFoundation ? `${chapters.length} chapters` : `${chapters.length} chapters, ${total} cards`;
@@ -2250,7 +2488,20 @@ async function loadFiles(fileList, logEl, opts){
     }
   }
 
-  if (imageEntries.length && !quietImageSummary){
+  if (imageMap.needed.size){
+    try {
+      const resolved = await resolveNeededImages(imageMap.needed);
+      for (const { chapters, isFoundation } of pendingChapterSets){
+        substituteImagePlaceholders(chapters, isFoundation, resolved);
+      }
+    } catch (e) {
+      // Don't let an image-encoding failure discard decks already parsed above — worst case
+      // those decks' embeds stay as broken placeholders instead of the whole import being lost.
+      logEl.innerHTML += `<div class="err">⚠ Could not embed some images — ${escapeHtml(e && e.message || "unknown error")}</div>`;
+    }
+  }
+
+  if (imageEntries.length){
     logEl.innerHTML += `<div class="ok">${imageEntries.length} image${imageEntries.length===1?"":"s"} found and available for embeds</div>`;
   }
 
@@ -2268,13 +2519,16 @@ function currentSubject(){
 
 // Remembers the current deck/note as the last one viewed for its type, so switching the
 // Q/A ⇄ Notes toggle and switching back lands on it again instead of always jumping to the
-// first deck of that type. Call after anything that changes state.subjectIdx to a meaningful
+// first deck of that type. Also persisted to IndexedDB (unlike lastQaSubject/lastFoundationSubject,
+// which are session-only) so restoreLastSubject() can reopen the same deck on the next visit, not
+// just the same type of deck. Call after anything that changes state.subjectIdx to a meaningful
 // (user-relevant) subject.
 function rememberCurrentSubject(){
   const subj = currentSubject();
   if (!subj) return;
   if (subj.type === "foundation") state.lastFoundationSubject = subj;
   else state.lastQaSubject = subj;
+  saveMeta("lastSubject", { name: subj.name, type: subj.type === "foundation" ? "foundation" : "qa" });
 }
 
 function buildDeck(shuffle){
@@ -2386,6 +2640,7 @@ function renderTypeToggle(){
 function setTypeFilter(type){
   if (state.typeFilter === type) return;
   stopReading(); // switching content type invalidates whatever chapter was queued up to read
+  stopAutoScroll();
   state.typeFilter = type;
   const remembered = type === "foundation" ? state.lastFoundationSubject : state.lastQaSubject;
   let idx = remembered ? state.subjects.indexOf(remembered) : -1;
@@ -2424,6 +2679,7 @@ function openSubjectDD(){
 
 function selectSubject(idx){
   stopReading(); // switching decks invalidates whatever chapter was queued up to read
+  stopAutoScroll();
   state.subjectIdx = idx;
   rememberCurrentSubject();
   state.chapterFilter = -1;
@@ -2447,6 +2703,7 @@ function showImportView(){
 
 async function clearAllDecks(){
   stopReading();
+  stopAutoScroll();
   state.subjects = [];
   state.subjectIdx = 0;
   state.chapterFilter = -1;
@@ -2460,6 +2717,7 @@ async function deleteDeck(idx){
   if (!subj) return;
   if (!confirm(`Delete deck "${subj.name}"? This cannot be undone.`)) return;
   stopReading(); // the deleted deck (or its chapter numbering) may be the one queued up to read
+  stopAutoScroll();
   state.subjects.splice(idx, 1);
   if (!state.subjects.length){
     await saveSubjectsToDB([]);
@@ -2525,37 +2783,16 @@ function exportNotesFile(subj){
 // pipeline as a fresh import, so parsing, star/note carry-forward, and sidecar-note merging
 // all behave identically. Decks loaded via the manual picker have no handle to re-read from
 // and are skipped; the user has to re-add those by hand if they've changed.
-async function recheckFilesForUpdates(logEl, opts){
-  const currentOnly = !!(opts && opts.currentOnly);
+async function recheckFilesForUpdates(logEl){
+  const handleSubjects = state.subjects.filter(s => s.noteDirHandle);
+  if (!handleSubjects.length){
+    logEl.innerHTML = `<div class="err">✕ No decks were imported via folder — use "+ add folder" so they can be rechecked.</div>`;
+    return;
+  }
   const curSubj = currentSubject();
   const currentName = curSubj ? curSubj.name : null;
   const currentIsFoundation = curSubj ? curSubj.type === "foundation" : false;
-  if (currentOnly && !curSubj){
-    logEl.innerHTML = `<div class="err">✕ No deck is currently open.</div>`;
-    return;
-  }
-  // Scoped recheck covers both halves of the open deck (foundation + Q&A share a display name)
-  // so its notes file, whichever half is on screen, gets picked up too.
-  let handleSubjects = state.subjects.filter(s => s.noteDirHandle);
-  if (currentOnly) handleSubjects = handleSubjects.filter(s => s.name === currentName);
-  if (!handleSubjects.length){
-    logEl.innerHTML = currentOnly
-      ? `<div class="err">✕ This deck wasn't imported via folder — use "+ add folder" so it can be rechecked.</div>`
-      : `<div class="err">✕ No decks were imported via folder — use "+ add folder" so they can be rechecked.</div>`;
-    return;
-  }
   logEl.innerHTML = `<div class="ok">Rechecking…</div>`;
-  // A folder import commonly holds every deck as sibling files in one flat vault, all sharing
-  // the same noteDirHandle — so a scoped recheck can't just rescan the whole handle like the
-  // full recheck does, or it drags in every other deck living in that same folder too. Instead
-  // pin down exactly which filenames belong to the open deck and filter the (still folder-wide)
-  // scan down to those, keeping every image around so embeds still resolve.
-  // Built from ALL name-matching subjects, not just handleSubjects: foundation-type subjects
-  // never carry their own noteDirHandle (see loadFiles()), so handleSubjects alone would always
-  // miss the foundation half's filename — silently skipping it on every scoped recheck.
-  const targetNames = currentOnly
-    ? new Set(state.subjects.filter(s => s.name === currentName).map(s => s.sourceFileName).filter(Boolean))
-    : null;
   const seen = new Set();
   let combined = "";
   for (const subj of handleSubjects){
@@ -2566,11 +2803,8 @@ async function recheckFilesForUpdates(logEl, opts){
       if (!(await ensureReadPermission(subj.noteDirHandle))){
         tempLog.innerHTML = `<div class="err">✕ Permission denied for a folder — could not recheck it.</div>`;
       } else {
-        let entries = await collectFilesFromDirHandle(subj.noteDirHandle);
-        if (targetNames) entries = entries.filter(e => IMAGE_RE.test(e.file.name) || targetNames.has(e.file.name));
-        // Those images are pulled in from the whole shared folder just so embeds still resolve —
-        // reporting "N images found" would misleadingly suggest they all belong to this one deck.
-        await loadFiles(entries, tempLog, { silentSkip: true, quietImageSummary: currentOnly });
+        const entries = await collectFilesFromDirHandle(subj.noteDirHandle);
+        await loadFiles(entries, tempLog, { silentSkip: true });
       }
     } catch (e) {
       tempLog.innerHTML += `<div class="err">✕ Could not recheck a folder — ${escapeHtml(e && e.message || "unknown error")}</div>`;
@@ -2602,15 +2836,13 @@ function openSettingsPanel(){
   if (hasDecks){
     renderSettingsDeckList();
     $("recheckAction").disabled = !state.subjects.some(s => s.noteDirHandle);
-    const curSubj = currentSubject();
-    // Foundation-type subjects never carry their own noteDirHandle (only Q&A subjects do —
-    // see loadFiles()), so checking curSubj alone would leave this disabled whenever a notes
-    // deck is on screen even though its paired Q&A deck of the same name has the handle that
-    // recheckFilesForUpdates(currentOnly) actually uses.
-    $("recheckCurrentAction").disabled = !(curSubj && state.subjects.some(s => s.name === curSubj.name && s.noteDirHandle));
     $("recheckLog").innerHTML = "";
+    // Foundation ("Notes") decks are reference chapters, not a shuffleable flashcard queue.
+    const subj = currentSubject();
+    $("shuffleAction").classList.toggle("hidden", !!(subj && subj.type === "foundation"));
   }
   renderReadAloud();
+  renderAutoScroll();
   $("settingsPanel").classList.remove("hidden");
   $("settingsBtn").setAttribute("aria-expanded","true");
 }
@@ -3374,6 +3606,9 @@ $("voiceSelect").addEventListener("change", async ()=>{
 });
 $("speedDec").addEventListener("click", ()=> stepSpeechRate(-READ_RATE_STEP));
 $("speedInc").addEventListener("click", ()=> stepSpeechRate(READ_RATE_STEP));
+$("autoScrollToggleBtn").addEventListener("click", toggleAutoScroll);
+$("autoScrollFab").addEventListener("click", toggleAutoScroll);
+$("autoScrollSpeedSlider").addEventListener("input", e => setAutoScrollSpeed(parseFloat(e.target.value)));
 $("timerBtn").addEventListener("click", e=>{
   // Stop propagation so the document-level "click outside closes it" listener above doesn't
   // immediately undo the open this same click just triggered (timerWrap sits outside settingsWrap
@@ -3487,7 +3722,6 @@ $("shuffleAction").addEventListener("click", ()=>{
   closeSettingsPanel();
 });
 $("recheckAction").addEventListener("click", ()=> recheckFilesForUpdates($("recheckLog")));
-$("recheckCurrentAction").addEventListener("click", ()=> recheckFilesForUpdates($("recheckLog"), { currentOnly: true }));
 $("clearAllAction").addEventListener("click", async ()=>{
   if (confirm("Are you sure you want to permanently delete all loaded decks from this browser?")){
     closeSettingsPanel();
@@ -3499,6 +3733,7 @@ initTheme();
 initBrowseScale();
 initTimer();
 initReadAloud();
+initAutoScrollSpeed();
 
 // ================= PWA: service worker registration =================
 if ("serviceWorker" in navigator) {
@@ -3547,6 +3782,22 @@ async function restoreTypeFilterPreference(){
   if (idx >= 0) state.subjectIdx = idx;
 }
 
+// Restores the exact deck/note last viewed (saved by rememberCurrentSubject), overriding the
+// "first deck of the remembered type" restoreTypeFilterPreference() lands on above — run this
+// after that, so a specific remembered deck always wins over just its type. Falls through to
+// whatever restoreTypeFilterPreference already picked if the saved deck no longer exists (e.g.
+// it was deleted, or renamed since — matched by name, so a rename also falls through).
+async function restoreLastSubject(){
+  let saved = null;
+  try { saved = await loadMeta("lastSubject"); } catch(e){}
+  if (!saved || !saved.name) return;
+  const idx = state.subjects.findIndex(s => s.name === saved.name && (s.type === "foundation" ? "foundation" : "qa") === saved.type);
+  if (idx >= 0){
+    state.subjectIdx = idx;
+    state.typeFilter = saved.type;
+  }
+}
+
 // Auto-load data out of browser storage upon load/refresh
 (async () => {
   const savedDecks = await loadSubjectsFromDB();
@@ -3555,6 +3806,7 @@ async function restoreTypeFilterPreference(){
     if (prepareSubjects(state.subjects)) await saveSubjectsToDB(state.subjects);
     state.chapterFilter = -1;
     await restoreTypeFilterPreference();
+    await restoreLastSubject();
     enterApp();
   }
 })();

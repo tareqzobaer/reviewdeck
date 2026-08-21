@@ -2,7 +2,7 @@
 
 // Bump this whenever index.html (or this file) changes, so old
 // clients pick up the new version instead of being stuck on a stale cache.
-const CACHE_VERSION = "v20";
+const CACHE_VERSION = "v19";
 const CACHE_NAME = "review-deck-" + CACHE_VERSION;
 
 // Same-origin app shell — precached on install so the app can launch with
