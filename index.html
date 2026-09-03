@@ -2397,6 +2397,8 @@ async function loadFiles(fileList, logEl, opts){
   const entries = normalizeFileEntries(fileList);
   logEl.innerHTML = "";
   let loadedAny = false;
+  let anyUnresolved = false; // drives the diagnostic file listing appended below, so it only
+                              // shows up when there's actually something to compare against
   const pendingChapterSets = []; // {chapters, isFoundation} for each subj loaded this batch,
                                   // substituted with real image data URLs once the loop below
                                   // finishes and resolveNeededImages() has encoded them
@@ -2481,6 +2483,7 @@ async function loadFiles(fileList, logEl, opts){
       const summary = isFoundation ? `${chapters.length} chapters` : `${chapters.length} chapters, ${total} cards`;
       logEl.innerHTML += `<div class="ok">\u2713 ${escapeHtml(file.name)} \u2014 ${summary}</div>`;
       if (unresolved.length){
+        anyUnresolved = true;
         logEl.innerHTML += `<div class="err">\u26a0 ${unresolved.length} image reference${unresolved.length===1?"":"s"} unresolved in ${escapeHtml(file.name)}: ${unresolved.map(escapeHtml).join("; ")}</div>`;
       }
     }catch(e){
@@ -2503,6 +2506,22 @@ async function loadFiles(fileList, logEl, opts){
 
   if (imageEntries.length){
     logEl.innerHTML += `<div class="ok">${imageEntries.length} image${imageEntries.length===1?"":"s"} found and available for embeds</div>`;
+  }
+
+  // Diagnostic only shown when something went unresolved: lists exactly what the folder
+  // picker itself handed back for this batch, so a "not found" ref can be checked against
+  // what the browser actually saw (as opposed to what a file manager shows) — that split
+  // tells apart a picker/enumeration gap from a ref-matching bug in resolveImageRef().
+  if (anyUnresolved){
+    if (!imageEntries.length){
+      logEl.innerHTML += `<div class="err">Diagnostic: the picker returned 0 image files in this batch — nothing to match against.</div>`;
+    } else {
+      const rows = imageEntries
+        .map(({ file, relativePath }) => `${escapeHtml(relativePath)} (${file.size} bytes, modified ${new Date(file.lastModified).toLocaleString()})`)
+        .sort()
+        .join("<br>");
+      logEl.innerHTML += `<details class="mini-log"><summary>Diagnostic: ${imageEntries.length} image file${imageEntries.length===1?"":"s"} the picker actually returned</summary>${rows}</details>`;
+    }
   }
 
   if (loadedAny){
