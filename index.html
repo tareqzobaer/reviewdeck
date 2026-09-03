@@ -800,7 +800,7 @@
         Headings (or <b># Markdown headings</b>) become chapters.<br>
         Lines starting with <b>Q.</b> / <b>Q:</b> become questions.<br>
         Lines starting with <b>A.</b> / <b>A:</b> become answers.<br>
-        A <b>[Core]</b> tag anywhere in a question marks it as a core question — filterable in Quiz with the <b>CORE ONLY</b> toggle — and is left in the text exactly as written. Starring a card in-app also marks it core.<br>
+        A <b>[Core]</b> tag anywhere in a question marks it as a core question — filterable with the <b>CORE ONLY</b> toggle — and is left in the text exactly as written. Starring a card in-app also marks it core.<br>
         Equations typed inside <b>$ ... $</b> or <b>$$ ... $$</b> will render in typeset math layout.<br>
         Images: standard <b>![alt](file.png)</b> or Obsidian embeds <b>![[file.png]]</b> / <b>![[file.png|caption]]</b> — folder import resolves these against every image found in the folder tree.
       </div>
@@ -831,7 +831,7 @@
       <div class="chips" id="chapChips"></div>
       <div class="deck-filters" id="deckFilters">
         <button id="starFilterBtn" class="filter-toggle" type="button" aria-pressed="false">☆ STARRED ONLY</button>
-        <button id="coreFilterBtn" class="filter-toggle" type="button" aria-pressed="false" title="Limit Quiz to cards tagged [Core] or manually starred">☆ CORE ONLY</button>
+        <button id="coreFilterBtn" class="filter-toggle" type="button" aria-pressed="false" title="Show only cards tagged [Core] or manually starred">☆ CORE ONLY</button>
       </div>
     </div>
 
@@ -973,7 +973,7 @@ const state = {
   revealed: false,
   quiz: { active:false, correct:0, missed:[] },
   starredOnly: false,
-  quizCoreOnly: false, // Quiz-only filter: restrict the review queue to "core" cards (see isCoreItem)
+  coreOnly: false, // restrict Study/Quiz/Browse to "core" cards (see isCoreItem) — same scope as starredOnly
   reviewAllDue: false, // session-only override: show every card in scope even if none are due yet
   lastQaSubject: null, // last deck/note actually viewed per type — see rememberCurrentSubject()
   lastFoundationSubject: null,
@@ -2576,15 +2576,13 @@ function buildDeck(shuffle){
   // reviewAllDue overrides that, from the "Review anyway" fallback when nothing's due). Study/
   // Browse are unaffected — they're still the "see everything" modes.
   const dueOnly = state.mode === "quiz" && !state.reviewAllDue;
-  // "Core only" narrows Quiz to cards marked core (see isCoreItem) — a [Core]-tagged question
-  // or a manually starred one. Study/Browse ignore it; it's a Quiz-scoped review filter, distinct
-  // from the always-on Starred Only filter above.
-  const coreOnly = state.mode === "quiz" && state.quizCoreOnly;
   const now = Date.now();
   const deck = [];
   chaps.forEach(c => c.items.forEach(it => {
     if (state.starredOnly && !it.starred) return;
-    if (coreOnly && !isCoreItem(it)) return;
+    // "Core only" — a [Core]-tagged question or a manually starred one (see isCoreItem) —
+    // always-on across Study/Quiz/Browse, same as Starred Only above.
+    if (state.coreOnly && !isCoreItem(it)) return;
     if (dueOnly && it.srsDue > now) return;
     deck.push({ ...it, chapter: c.title, subj: subj.name, source: it });
   }));
@@ -2921,9 +2919,9 @@ function renderChips(){
   $("starFilterBtn").classList.toggle("active", state.starredOnly);
   $("starFilterBtn").setAttribute("aria-pressed", String(state.starredOnly));
   $("starFilterBtn").textContent = state.starredOnly ? "★ STARRED ONLY" : "☆ STARRED ONLY";
-  $("coreFilterBtn").classList.toggle("active", state.quizCoreOnly);
-  $("coreFilterBtn").setAttribute("aria-pressed", String(state.quizCoreOnly));
-  $("coreFilterBtn").textContent = state.quizCoreOnly ? "★ CORE ONLY" : "☆ CORE ONLY";
+  $("coreFilterBtn").classList.toggle("active", state.coreOnly);
+  $("coreFilterBtn").setAttribute("aria-pressed", String(state.coreOnly));
+  $("coreFilterBtn").textContent = state.coreOnly ? "★ CORE ONLY" : "☆ CORE ONLY";
   renderQuizDueBadge();
 }
 
@@ -2939,7 +2937,7 @@ function dueCardCount(){
   let count = 0;
   chaps.forEach(c => c.items.forEach(it => {
     if (state.starredOnly && !it.starred) return;
-    if (state.quizCoreOnly && !isCoreItem(it)) return;
+    if (state.coreOnly && !isCoreItem(it)) return;
     if (it.srsDue <= now) count++;
   }));
   return count;
@@ -3179,7 +3177,7 @@ function hasCardsInScope(){
   if (!subj || subj.type === "foundation") return false;
   const chaps = state.chapterFilter === -1 ? subj.chapters : [subj.chapters[state.chapterFilter]];
   return chaps.some(c => c.items.some(it =>
-    (!state.starredOnly || it.starred) && (!state.quizCoreOnly || isCoreItem(it))));
+    (!state.starredOnly || it.starred) && (!state.coreOnly || isCoreItem(it))));
 }
 
 function renderCard(){
@@ -3191,9 +3189,9 @@ function renderCard(){
       $("qText").innerHTML = `Nothing due for review right now.<br><button class="review-anyway-btn" id="reviewAnywayBtn" type="button">Review anyway</button>`;
       $("reviewAnywayBtn").onclick = () => { state.reviewAllDue = true; setMode("quiz", true); };
     } else {
-      $("qText").textContent = state.starredOnly && state.quizCoreOnly ? "No starred core cards in this selection."
+      $("qText").textContent = state.starredOnly && state.coreOnly ? "No starred core cards in this selection."
         : state.starredOnly ? "No starred cards in this selection."
-        : state.quizCoreOnly ? "No core cards in this selection."
+        : state.coreOnly ? "No core cards in this selection."
         : "No cards in this selection.";
     }
     $("aText").classList.add("hidden"); $("aHidden").classList.add("hidden");
@@ -3255,7 +3253,7 @@ async function toggleStar(){
   await persistDecks();
   const subj = currentSubject();
   if (subj && subj.noteDirHandle) await writeSidecarNotes(subj);
-  if (state.starredOnly){ buildDeck(state.mode === "quiz"); }
+  if (state.starredOnly || state.coreOnly){ buildDeck(state.mode === "quiz"); }
   renderCard();
 }
 
@@ -3390,6 +3388,7 @@ function computeSrsStats(){
   const stats = { new: 0, learning: 0, mature: 0, dueTomorrow: 0, dueWeek: 0 };
   chaps.forEach(c => c.items.forEach(it => {
     if (state.starredOnly && !it.starred) return;
+    if (state.coreOnly && !isCoreItem(it)) return;
     if (!it.srsReps) stats.new++;
     else if (it.srsInterval >= 21) stats.mature++;
     else stats.learning++;
@@ -3454,6 +3453,7 @@ function renderBrowse(){
   chaps.forEach(c=>{
     const items = c.items.filter(it =>
       (!state.starredOnly || it.starred) &&
+      (!state.coreOnly || isCoreItem(it)) &&
       (!term || it.q.toLowerCase().includes(term) || it.a.toLowerCase().includes(term)));
     if (!items.length) return;
     const label = escapeHtml(c.title);
@@ -3623,10 +3623,10 @@ $("starFilterBtn").onclick = ()=>{
   setMode(state.mode, true);
 };
 $("coreFilterBtn").onclick = ()=>{
-  state.quizCoreOnly = !state.quizCoreOnly;
+  state.coreOnly = !state.coreOnly;
   state.reviewAllDue = false; // a narrower/different scope needs its own due-check
   renderChips();
-  if (state.mode === "quiz") setMode(state.mode, true);
+  setMode(state.mode, true);
 };
 
 $("card").addEventListener("click", e=>{
